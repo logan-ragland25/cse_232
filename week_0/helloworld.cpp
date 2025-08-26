@@ -1,6 +1,6 @@
-#include <iostream>
+#include <iostream>      // Enables input/output
 
-int main()
-{
-    std::cout << "Hello world" << std::endl;
+int main() {                          // Entry point. 
+    std::cout << "Hello World!\n";    // Output to terminal
+    return 0;                         // Exit code
 }
