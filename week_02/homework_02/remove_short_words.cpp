@@ -8,18 +8,41 @@ int main() {
 
     while (std::getline(std::cin, input)) {
         for (unsigned pos = 0; pos < input.length(); pos++) {
+            // if (input[pos] == ' ') {
+            //     if (pos >= 5) {
+            //         finalOutput += input.substr(0, pos) + " ";
+            //         //std::cout << input.substr(0, pos) + " " << "\n";
+            //     }
+            //     input = input.substr(pos + 1);
+            //     pos = 0;
+            //     // std::cout << input << " - " << input.length() << "\n";
+            // }
+
+            // if (pos == input.length() - 1) {
+            //     finalOutput += input.substr(0, pos) + "\n";
+            // }
+
             if (input[pos] == ' ') {
-                std::cout << input[pos] << "\n";
-                // if (pos >= 5) {
-                //     finalOutput += input.substr(0, pos) + " ";
-                //     input = input.substr(pos + 1);
-                //     pos = 0;
-                // }
-                // std::cout << input << " - " << input.length() << "\n";
+                //std::cout << input.substr(0, pos) << " - word length: " << pos << "\n";
+
+                if (pos >= 5) {
+                    finalOutput += input.substr(0, pos + 1);
+                }
+
+                input = input.substr(pos + 1);
+
+                pos = 0;
+            }
+            if (pos == input.length() - 1) {
+                if (pos >= 5) {
+                    finalOutput += input.substr(0, pos + 1) + "\n";
+                    //std::cout << input.substr(0, pos + 1) << " - word length: " << pos + 1 << "\n";
+                }
+                finalOutput += "\n";
             }
         }
-        //finalOutput += "\n";
+        finalOutput += "\n";
     }
-    //std::cout << "\n\n" << finalOutput;
+    std::cout << "\n" << finalOutput;
     return 0;
 }
