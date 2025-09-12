@@ -3,67 +3,53 @@
 
 // Test if 'word' is a full entry in 'word_list' beginning as index 'pos'.
 bool AtListPosition(std::string wordList, std::string word, size_t startingPos) {
-    int endingPos{};
-    std::string fullWord{};
-
-    // if (startingPos != 0 && word_list[startingPos - 1] != ',') {
-    //     return 0;
-    // }
-    // for (unsigned pos = startingPos; pos < word_list.length(); pos++ ) {
-    //     if (word_list[pos] == ',') {
-    //         endingPos = pos;
-    //         break;
-    //     }
-    // }
-
-    // fullWord = word_list.substr(startingPos, endingPos - startingPos);
-
-    // return (fullWord == word);
-    //std::cout << wordList[startingPos - 1] << " : " << wordList[startingPos + word.length()] << " : " << startingPos + word.length() << "\n";
     if (startingPos == 0) {
         if (wordList[startingPos + word.length()] != ',') {
             return 0;
         }
     }
     else {
-        if (wordList[startingPos - 1] != ',' || wordList[startingPos + word.length()] != ',') {
+        std::cout << (wordList[startingPos - 1] != ',');
+        if (wordList[startingPos - 1] != ',') {
+            return 0;
+        }
+        if (startingPos + word.length() == wordList.length()) {
+            //std::cout << "test: " << wordList.substr(startingPos, word.length()) << " vs " << word;
+            if (wordList.substr(startingPos, word.length()) == word) {
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        if (wordList[startingPos + word.length()] != ',') {
             return 0;
         }
     }
-    return 1;
+    return 0;
 }
 
-// Inputs are:
-//   word_list - a string that contains a list of comma-separated words.
-//   word - a string that contains to word to search for in the list.
-//   pos - an optional size_t containing the position to start the search
-//         (start at zero if no pos argument is provided)
-// Return:
-//   The index where 'word' was found as a full entry in word_list -or-
-//   std::string::npos if word is not found
-//
-// Note, must match FULL word.  So "def" would be matched in "abc,def,ghijk,l" or in
-// "def,456,ghi,789,jkl", but NOT in "defeated,indefinitely,redefined"
-size_t FindInList(std::string word_list, std::string word, size_t pos=0) {
+int FindInList(std::string word_list, std::string word, size_t pos=0) {
     // Declare Variables
     int location{};
-    bool fullWord{};
+    bool isFullWord{};
 
     // Get location of word
     location = word_list.find(word, pos);
-    
+
     // See if location is found
     if (location < 0) {
-        return std::string::npos;
+        return -1;
     }
     if (location != 0) {
+        isFullWord = AtListPosition(word_list, word, location);
         // If location is not the first value and is not preceded by a comma, it is not a full world
-        while (!fullWord) {
+        while (!isFullWord) {
             location = word_list.find(word, location + 1);
             if (location < 0) {
-                return std::string::npos;
+                return -1;
             }
-            fullWord = AtListPosition(word_list, word, location);
+            isFullWord = AtListPosition(word_list, word, location);
         }
     }
     
@@ -75,13 +61,48 @@ size_t FindInList(std::string word_list, std::string word, size_t pos=0) {
 // Returns the value of the string found first in the word list.
 // Should return "N/A" if neither is in the word list.
 std::string GetFirstInList(std::string word_list, std::string word1, std::string word2) {
-    return {};
+    int word1Pos{}, word2Pos{};
+    
+    word1Pos = FindInList(word_list, word1);
+    word2Pos = FindInList(word_list, word2);
+
+    if (word1Pos >= 0 && word2Pos >= 0) {
+        if (word1Pos < word2Pos) {
+            return word1;
+        }
+        else if (word1Pos > word2Pos) {
+            return word2;
+        }
+    }
+    else if ((word1Pos < 0 && word2Pos < 0) || word1Pos == word2Pos) {
+        return "N/A";
+    }
+    else if (word1Pos < 0) {
+        return word2;
+    }
+    else if (word2Pos < 0) {
+        return word1;
+    }
+    return "N/A";
 }
 
 // Takes a word_list and a word and counts the number of times that word
 // is found in the list.
 size_t CountInList(std::string word_list, std::string word) {
-    return {};
+    int position{}, count{}, location{};
+
+    position = FindInList(word_list, word, 0);
+    while (position >= 0) {
+        location = FindInList(word_list, word, position);
+        if (location < 0) {
+            break;
+        }
+        count++;
+        position = location + 1;
+        // std::cout << location << " " << position << "\n";
+    }
+    // std::cout << "Count of word " << word << ": " << count << "\n";
+    return count;
 }
 
 
@@ -105,12 +126,17 @@ size_t CountInList(std::string word_list, std::string word) {
 
 int main()
 {
-    std::string word1, word2, wordList {};
-    int wordOneCount, wordTwoCount, location {};
+    std::string word1{}, word2{}, wordList{}, firstFound{};
+    int wordOneCount{}, wordTwoCount{};
+    // int location{};
 
-    wordList = "NewMexico,Kansas,Alabama,Virginia,NewYork,WestVirginia,Arkansas,Virginia,Utah,Virginia";
-    word1 = "Virginia";
-    
+    wordList = "this,is,a,test,list,of,words";
+    word1 = "Kansas";
+    word2 = "Virginia";
+
+    std::cout << AtListPosition(wordList, "is", 5) << "\n";
+    // CountInList(wordList, word1);
+
     // wordList = "defeated,indefinitely,redefined";
     // word1 = "def";
 
@@ -123,10 +149,9 @@ int main()
     // std::cout << "Enter List of Words: ";
     // std::cin >> wordList;
 
-    // location = FindInList(wordList, word1, 40);
-    // std::cout << "Function Output: " << location << ", " << wordList.substr(location, word1.length());
     // wordOneCount = CountInList(wordList, word1);
     // wordTwoCount = CountInList(wordList, word2);
+    // firstFound = GetFirstInList(wordList, word1, word2);
 
-    //std::cout << AtListPosition(wordList, word1, 11) << "\n";
+    // std::cout << firstFound << " " << wordOneCount << " " << wordTwoCount << "\n";
 }
