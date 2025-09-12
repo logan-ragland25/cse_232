@@ -2,8 +2,35 @@
 #include <string>
 
 // Test if 'word' is a full entry in 'word_list' beginning as index 'pos'.
-bool AtListPosition(std::string word_list, std::string word, size_t pos)
-{
+bool AtListPosition(std::string wordList, std::string word, size_t startingPos) {
+    int endingPos{};
+    std::string fullWord{};
+
+    // if (startingPos != 0 && word_list[startingPos - 1] != ',') {
+    //     return 0;
+    // }
+    // for (unsigned pos = startingPos; pos < word_list.length(); pos++ ) {
+    //     if (word_list[pos] == ',') {
+    //         endingPos = pos;
+    //         break;
+    //     }
+    // }
+
+    // fullWord = word_list.substr(startingPos, endingPos - startingPos);
+
+    // return (fullWord == word);
+    //std::cout << wordList[startingPos - 1] << " : " << wordList[startingPos + word.length()] << " : " << startingPos + word.length() << "\n";
+    if (startingPos == 0) {
+        if (wordList[startingPos + word.length()] != ',') {
+            return 0;
+        }
+    }
+    else {
+        if (wordList[startingPos - 1] != ',' || wordList[startingPos + word.length()] != ',') {
+            return 0;
+        }
+    }
+    return 1;
 }
 
 // Inputs are:
@@ -17,21 +44,44 @@ bool AtListPosition(std::string word_list, std::string word, size_t pos)
 //
 // Note, must match FULL word.  So "def" would be matched in "abc,def,ghijk,l" or in
 // "def,456,ghi,789,jkl", but NOT in "defeated,indefinitely,redefined"
-size_t FindInList(std::string word_list, std::string word, size_t pos=0)
-{
+size_t FindInList(std::string word_list, std::string word, size_t pos=0) {
+    // Declare Variables
+    int location{};
+    bool fullWord{};
+
+    // Get location of word
+    location = word_list.find(word, pos);
+    
+    // See if location is found
+    if (location < 0) {
+        return std::string::npos;
+    }
+    if (location != 0) {
+        // If location is not the first value and is not preceded by a comma, it is not a full world
+        while (!fullWord) {
+            location = word_list.find(word, location + 1);
+            if (location < 0) {
+                return std::string::npos;
+            }
+            fullWord = AtListPosition(word_list, word, location);
+        }
+    }
+    
+
+    return location;
 }
 
 // Takes two strings and a word list.
 // Returns the value of the string found first in the word list.
 // Should return "N/A" if neither is in the word list.
-std::string GetFirstInList(std::string word_list, std::string word1, std::string word2)
-{
+std::string GetFirstInList(std::string word_list, std::string word1, std::string word2) {
+    return {};
 }
 
 // Takes a word_list and a word and counts the number of times that word
 // is found in the list.
-size_t CountInList(std::string word_list, std::string word) 
-{
+size_t CountInList(std::string word_list, std::string word) {
+    return {};
 }
 
 
@@ -55,9 +105,28 @@ size_t CountInList(std::string word_list, std::string word)
 
 int main()
 {
-    std::string input1, input2 {};
+    std::string word1, word2, wordList {};
+    int wordOneCount, wordTwoCount, location {};
 
-    std::cin >> input1 >> input2;
+    wordList = "NewMexico,Kansas,Alabama,Virginia,NewYork,WestVirginia,Arkansas,Virginia,Utah,Virginia";
+    word1 = "Virginia";
+    
+    // wordList = "defeated,indefinitely,redefined";
+    // word1 = "def";
 
+    // std::cout << "Enter Word One: ";
+    // std::cin >> word1;
 
+    // std::cout << "Enter Word Two: ";
+    // std::cin >> word2;
+
+    // std::cout << "Enter List of Words: ";
+    // std::cin >> wordList;
+
+    // location = FindInList(wordList, word1, 40);
+    // std::cout << "Function Output: " << location << ", " << wordList.substr(location, word1.length());
+    // wordOneCount = CountInList(wordList, word1);
+    // wordTwoCount = CountInList(wordList, word2);
+
+    //std::cout << AtListPosition(wordList, word1, 11) << "\n";
 }
