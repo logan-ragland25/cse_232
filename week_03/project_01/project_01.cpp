@@ -31,18 +31,23 @@ bool AtListPosition(std::string wordList, std::string word, size_t startPos) {
 }
 
 size_t FindInList(std::string wordList, std::string word, size_t pos=0) {
-    int instanceOfWord{}, location{};
-    location = pos;
+    int instanceOfWord{}, searchLocationStart{};
+    searchLocationStart = pos;
 
     while (true) {
-        instanceOfWord = wordList.find(word, location);
+        // Find where word starts
+        instanceOfWord = wordList.find(word, searchLocationStart);
+        if (instanceOfWord < 0) {
+            return std::string::npos;
+        }
         if (AtListPosition(wordList, word, instanceOfWord)) {
             return instanceOfWord;
         }
         else {
-            location = instanceOfWord + 1;
+            searchLocationStart = instanceOfWord + 1;
         }
     }
+    return std::string::npos;
 }
 
 int main()
