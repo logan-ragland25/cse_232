@@ -30,16 +30,31 @@ bool AtListPosition(std::string wordList, std::string word, size_t startPos) {
     return 0;
 }
 
+size_t FindInList(std::string wordList, std::string word, size_t pos=0) {
+    int instanceOfWord{}, location{};
+    location = pos;
+
+    while (true) {
+        instanceOfWord = wordList.find(word, location);
+        if (AtListPosition(wordList, word, instanceOfWord)) {
+            return instanceOfWord;
+        }
+        else {
+            location = instanceOfWord + 1;
+        }
+    }
+}
+
 int main()
 {
-    std::string word_list="another,string,this,one,for,testing,beginning,and,end,words";
-
-    
-    std::cout << AtListPosition(word_list, "another", 0);
-    // CHECK(!AtListPosition(word_list, "is", 4), "Off-by-one error");
-    // CHECK(!AtListPosition(word_list, "is", 6), "Off-by-one error");
-    // CHECK(!AtListPosition(word_list, "is", 20), "Right length, wrong word.");
-    // CHECK(AtListPosition(word_list, "test", 10));
-    // CHECK(AtListPosition(word_list, "list", 15));
+    std::string word_list="A,list,of,words,to,use,for,testing";
+    std::cout << FindInList(word_list, "A");
+    // CHECK(FindInList(word_list, "list") == 2u);
+    // CHECK(FindInList(word_list, "of") == 7u);
+    // CHECK(FindInList(word_list, "words") == 10u);
+    // CHECK(FindInList(word_list, "to") == 16u);
+    // CHECK(FindInList(word_list, "use") == 19u);
+    // CHECK(FindInList(word_list, "for") == 23u);
+    // CHECK(FindInList(word_list, "testing") == 27u);
 
 }
