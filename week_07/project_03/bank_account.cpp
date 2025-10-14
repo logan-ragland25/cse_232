@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <cmath>
+#include <sstream>
 
 double round_to_cent(double amount) {
     return round(amount * 100) / 100.0;
@@ -73,33 +74,54 @@ std::string GetFunction(std::string input) {
     return "";
 }
 
-int GetAmount(std::string input) {
-    int amount{}; 
-    std::vector<std::string> keywords{"Withdraw", "Deposit"};
+double GetAmount(std::string input) {
+    std::string stringAmount{};
 
-    for (unsigned int pos = 0; pos < keywords.size(); pos++) {   
-        if (input.find(keywords.at(pos)) != std::string::npos) {
-           amount = std::stod(input.substr(input.find(keywords.at(pos)) + 2 + keywords.at(pos).length()));
-        }   
+    if (input.find("Withdraw") != std::string::npos) {
+        stringAmount = input.substr(21);
+    } else if (input.find("Deposit") != std::string::npos) {
+        stringAmount = input.substr(20);
     }
+    double amount = std::stod(stringAmount);
+
     return amount;
+
+}
+
+std::string CutDecimals(double input) {
+    std::string value = std::to_string(input);
+    if (value.find('.') != std::string::npos) {
+        value = value.substr(0, value.find('.') + 3);
+    }
+    else {
+        value.append(".00");
+    }
+    return value;
 }
 
 std::string process_command(std::string line, std::string &date, double &balance, double apr) {
     date = GetDate(line);
     std::string command = line.substr(11);
-    int amount = GetAmount(line);
+    double amount = GetAmount(line);
     std::string function = GetFunction(line);
 
+    std::stringstream output; 
+    output << "On " << date << ": Instructed to perform \"" << command << "\"\n";
+
     if (function == "Withdraw") {
-        withdraw(balance, amount);
+        if (balance > amount) {
+            withdraw(balance, amount);
+        } else {
+            overdraft(balance, amount);
+            output << "Overdraft!\n";
+        }
     } 
     else if (function == "Deposit") {
         deposit(balance, amount);
     }
     
-    std::cout << round_to_cent(balance) << "\n";
-    return "On " + date + ": Instructed to perform \"" + command + "\"\nBalance: " + std::to_string(balance);
+    output << "Balance: " << CutDecimals(balance) << "\n";
+    return output.str();
 }
 
 std::string process_commands (std::string input, int lines) {
