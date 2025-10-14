@@ -100,13 +100,26 @@ std::string CutDecimals(double input) {
 }
 
 std::string process_command(std::string line, std::string &date, double &balance, double apr) {
-    date = GetDate(line);
+    int elapsedMonths{};
+    std::string currentDate = GetDate(line);
+    double interestEarned{};
+
+    if (date == "") {
+        elapsedMonths = 0;
+        interestEarned = 0;
+    } else {
+        elapsedMonths = number_of_first_of_months(date, currentDate);
+        if (balance > 0) {
+            interestEarned = interest_earned(balance, apr, date, currentDate);
+        }
+    }
+
     std::string command = line.substr(11);
     double amount = GetAmount(line);
     std::string function = GetFunction(line);
 
     std::stringstream output; 
-    output << "On " << date << ": Instructed to perform \"" << command << "\"\n";
+    output << "On " << currentDate << ": Instructed to perform \"" << command << "\"\n";
 
     if (function == "Withdraw") {
         if (balance > amount) {
@@ -119,11 +132,38 @@ std::string process_command(std::string line, std::string &date, double &balance
     else if (function == "Deposit") {
         deposit(balance, amount);
     }
-    
+
+    if (elapsedMonths > 0) {
+        output << "Since " << date << ", interest has accrued " << elapsedMonths << " times.\n$" << CutDecimals(interestEarned) << " interest has been earned.\n";
+    } 
+
+    balance += interestEarned;
+
+    date = currentDate;
+
     output << "Balance: " << CutDecimals(balance) << "\n";
     return output.str();
 }
 
-std::string process_commands (std::string input, int lines) {
-    return "";
+std::vector<std::string> ConvertStringToVector(std::string input) {
+    std::vector<std::string> inputVector{};
+    
+    while (input.find("\n") != std::string::npos) {
+        inputVector.push_back(input.substr(0, input.find("\n")));
+        input = input.substr(input.find("\n") + 1);
+    }
+    inputVector.push_back(input.substr(0));
+    return inputVector;
+} 
+
+std::string process_commands (std::string input, double apr) {
+    double balance = 0;
+    std::string date{};
+
+    std::stringstream output; 
+    std::vector stringVector = ConvertStringToVector(input);
+    for (unsigned int pos = 0; pos < stringVector.size(); pos++) {
+        output << process_command(stringVector.at(pos), date, balance, apr);
+    }
+    return output.str();
 }
