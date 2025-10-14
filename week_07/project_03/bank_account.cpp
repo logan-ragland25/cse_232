@@ -121,6 +121,12 @@ std::string process_command(std::string line, std::string &date, double &balance
     std::stringstream output; 
     output << "On " << currentDate << ": Instructed to perform \"" << command << "\"\n";
 
+    
+    if (elapsedMonths > 0) {
+        output << "Since " << date << ", interest has accrued " << elapsedMonths << " times.\n$" << CutDecimals(interestEarned) << " interest has been earned.\n";
+    } 
+
+    
     if (function == "Withdraw") {
         if (balance > amount) {
             withdraw(balance, amount);
@@ -132,10 +138,6 @@ std::string process_command(std::string line, std::string &date, double &balance
     else if (function == "Deposit") {
         deposit(balance, amount);
     }
-
-    if (elapsedMonths > 0) {
-        output << "Since " << date << ", interest has accrued " << elapsedMonths << " times.\n$" << CutDecimals(interestEarned) << " interest has been earned.\n";
-    } 
 
     balance += interestEarned;
 
@@ -162,7 +164,7 @@ std::string process_commands (std::string input, double apr) {
 
     std::stringstream output; 
     std::vector stringVector = ConvertStringToVector(input);
-    for (unsigned int pos = 0; pos < stringVector.size(); pos++) {
+    for (unsigned int pos = 0; pos < stringVector.size() - 1; pos++) {
         output << process_command(stringVector.at(pos), date, balance, apr);
     }
     return output.str();
