@@ -61,7 +61,34 @@ bool Exchange::MakeWithdrawal(std::string username, std::string asset, int amoun
 }
 
 bool Exchange::AddOrder(Order order) {
-    return -1;
+    int position{-1};
+    for (unsigned pos = 0; pos < this->accountList.size(); pos++) {
+        if (this->accountList.at(pos).GetName() == order.username) {
+            position = pos;
+            break;
+        }
+    }
+    if (position == -1) {
+        return 0;
+    }
+
+    UserAccount& user = this->accountList.at(position);
+
+    if (order.side == "Buy") {
+        if (user.GetPortfolio().at("USD") >= order.amount * order.price) {
+            this->MakeWithdrawal(order.username, "USD", order.amount * order.price);
+            this->openBuyOrders.push_back(order);
+            return 1;
+        }
+    } else if (order.side == "Sell") {
+        if (user.GetPortfolio().at(order.asset) >= order.amount) {
+            this->MakeWithdrawal(order.username, order.asset, order.amount);
+            this->openSellOrders.push_back(order);
+            return 1;
+        }
+    }
+    
+    return 0;
 }
 
 void Exchange::PrintUsersOrders(std::ostream &os) {

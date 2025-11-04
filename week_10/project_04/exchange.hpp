@@ -10,6 +10,8 @@
 class Exchange {
     private:
         std::vector<UserAccount> accountList{};
+        std::vector<Order> openSellOrders{};
+        std::vector<Order> openBuyOrders{};
     public:
         std::vector<UserAccount> GetAccountList{};
         void MakeDeposit(std::string username, std::string asset, int amount);
