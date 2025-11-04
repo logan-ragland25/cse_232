@@ -60,7 +60,7 @@ bool Exchange::MakeWithdrawal(std::string username, std::string asset, int amoun
     return this->accountList.at(position).Withdrawal(asset, amount);
 }
 
-bool Exchange::AddOrder(Order &order) {
+bool Exchange::AddOrder(Order order) {
     int position{-1};
     for (unsigned pos = 0; pos < this->accountList.size(); pos++) {
         if (this->accountList.at(pos).GetName() == order.username) {
@@ -100,9 +100,8 @@ void Exchange::PrintUsersOrders(std::ostream &os) {
     for (unsigned int accountNumber = 0; accountNumber < this->accountList.size(); accountNumber++) {
         os << "\n" << this->accountList.at(accountNumber).GetName() << "\'s Open Orders (in chronological order):";
         for (unsigned int pos = 0; pos < this->openOrders.size(); pos++) {
-            std::cout << accountNumber << " " << this->accountList.at(accountNumber).GetName() << " " << this->openOrders.at(pos).username << "\n";
             if (this->openOrders.at(pos).username == this->accountList.at(accountNumber).GetName()) {
-                os << "\n" << this->openOrders.at(pos).side << " " << this->openOrders.at(pos).amount << " " << this->openOrders.at(pos).asset << " at " << this->openOrders.at(pos).price << " by " << this->openOrders.at(pos).username;
+                os << "\n" << this->openOrders.at(pos).side << " " << this->openOrders.at(pos).amount << " " << this->openOrders.at(pos).asset << " at " << this->openOrders.at(pos).price << " USD by " << this->openOrders.at(pos).username;
             }
         }
         os << "\n" <<  this->accountList.at(accountNumber).GetName() << "\'s Filled Orders (in chronological order):";
