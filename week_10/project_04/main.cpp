@@ -6,33 +6,43 @@
 int main() {
     Exchange e;
     std::ostringstream oss;
+
     e.MakeDeposit("Nahum", "BTC", 10);
     e.MakeDeposit("Nahum", "USD", 500);
     e.MakeDeposit("Dolson", "USD", 1000);
     e.MakeDeposit("Ofria", "ETH", 44);
-    e.PrintUserPortfolios(std::cout);
+    // e.PrintUserPortfolios(std::cout);
     oss.str("");
-    e.PrintUserPortfolios(oss);
-    std::cout << (oss.str() == "User Portfolios (in alphabetical order):\nDolson's Portfolio: 1000 USD, \nNahum's Portfolio: 10 BTC, 500 USD, \nOfria's Portfolio: 44 ETH, \n");
-    std::cout << (!e.AddOrder({"Nahum", "Sell", "BTC", 50, 1000}));
-    // Can't place order because Nahum doesn't have enough BTC
-    std::cout << (!e.AddOrder({"Nahum", "Buy", "BTC", 50, 200}));
-    // Can't place order because Nahum doesn't have enough USD
-    std::cout << (e.AddOrder({"Nahum", "Sell", "BTC", 4, 1000}));
-    std::cout << (e.AddOrder({"Nahum", "Buy", "ETH", 3, 2}));
-    std::cout << (e.AddOrder({"Dolson", "Buy", "BTC", 7, 1}));
-    std::cout << (e.AddOrder({"Ofria", "Sell", "ETH", 2, 500}));
-    // Make sure to remove orders from portfolios
-    e.PrintUserPortfolios(std::cout);
+    // e.PrintUserPortfolios(oss);
+    // std::cout << "a: " << (oss.str() == "User Portfolios (in alphabetical order):\nDolson's Portfolio: 1000 USD, \nNahum's Portfolio: 10 BTC, 500 USD, \nOfria's Portfolio: 44 ETH, \n") << "\n";
     oss.str("");
-    e.PrintUserPortfolios(oss);
-    std::cout << "here: \n";
+    e.PrintUsersOrders(oss);
     std::cout << oss.str() << "\n";
-    std::cout << (oss.str() == "User Portfolios (in alphabetical order):\nDolson's Portfolio: 993 USD, \nNahum's Portfolio: 6 BTC, 494 USD, \nOfria's Portfolio: 42 ETH, \n");
-    
-    
-    
-    /////////////////////////////////////
+    std::cout << "b: " << (oss.str() == "Users Orders (in alphabetical order):\nDolson's Open Orders (in chronological order):\nDolson's Filled Orders (in chronological order):\nNahum's Open Orders (in chronological order):\nNahum's Filled Orders (in chronological order):\nOfria's Open Orders (in chronological order):\nOfria's Filled Orders (in chronological order):\n") << "\n";
+    // std::cout << "c: " << (!e.AddOrder({"Nahum", "Sell", "BTC", 50, 1000})) << "\n";
+    // // Can't place order because Nahum doesn't have enough BTC
+    // std::cout << "d: " << (!e.AddOrder({"Nahum", "Buy", "BTC", 50, 200})) << "\n";
+    // // Can't place order because Nahum doesn't have enough USD
+    // std::cout << "e: " << (e.AddOrder({"Nahum", "Sell", "BTC", 4, 1000})) << "\n";
+    // std::cout << "f: " << (e.AddOrder({"Nahum", "Buy", "ETH", 3, 2})) << "\n";
+    // std::cout << "g: " << (e.AddOrder({"Dolson", "Buy", "BTC", 7, 1})) << "\n";
+    // std::cout << "h: " << (e.AddOrder({"Ofria", "Sell", "ETH", 2, 500})) << "\n";
+    // // Make sure to remove orders from portfolios
+    // e.PrintUserPortfolios(std::cout);
+    // oss.str("");
+    // e.PrintUserPortfolios(oss);
+    // std::cout << "i: " << (oss.str() == "User Portfolios (in alphabetical order):\nDolson's Portfolio: 993 USD, \nNahum's Portfolio: 6 BTC, 494 USD, \nOfria's Portfolio: 42 ETH, \n") << "\n";
+    // e.PrintUsersOrders(std::cout);
+    // oss.str("");
+    // e.PrintUsersOrders (oss);
+    // std::cout << "\n";
+    // std::cout << "j: " << (oss.str() == "Users Orders (in alphabetical order):\nDolson's Open Orders (in chronological order):\nBuy 7 BTC at 1 USD by Dolson\nDolson's Filled Orders (in chronological order):\nNahum's Open Orders (in chronological order):\nSell 4 BTC at 1000 USD by Nahum\nBuy 3 ETH at 2 USD by Nahum\nNahum's Filled Orders (in chronological order):\nOfria's Open Orders (in chronological order):\nSell 2 ETH at 500 USD by Ofria\nOfria's Filled Orders (in chronological order):\n") << "\n";
+    return 0;
+}
+
+
+
+/////////////////////////////////////
     // Exchange e;
     // std::ostringstream oss;
     // e.MakeDeposit("Nahum", "BTC", 10);
@@ -129,6 +139,3 @@ int main() {
 //   msu_base.AddOrder({"Enbody", "Buy", "LTC", 1, 10});
 //   msu_base.AddOrder({"Ofria", "Sell", "BCH", 2, 55});
 //   msu_base.PrintBidAskSpread(std::cout);
-
-  return 0;
-}

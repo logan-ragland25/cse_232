@@ -60,7 +60,7 @@ bool Exchange::MakeWithdrawal(std::string username, std::string asset, int amoun
     return this->accountList.at(position).Withdrawal(asset, amount);
 }
 
-bool Exchange::AddOrder(Order order) {
+bool Exchange::AddOrder(Order &order) {
     int position{-1};
     for (unsigned pos = 0; pos < this->accountList.size(); pos++) {
         if (this->accountList.at(pos).GetName() == order.username) {
@@ -77,13 +77,13 @@ bool Exchange::AddOrder(Order order) {
     if (order.side == "Buy") {
         if (user.GetPortfolio().at("USD") >= order.amount * order.price) {
             this->MakeWithdrawal(order.username, "USD", order.amount * order.price);
-            this->openBuyOrders.push_back(order);
+            this->openOrders.push_back(order);
             return 1;
         }
     } else if (order.side == "Sell") {
         if (user.GetPortfolio().at(order.asset) >= order.amount) {
             this->MakeWithdrawal(order.username, order.asset, order.amount);
-            this->openSellOrders.push_back(order);
+            this->openOrders.push_back(order);
             return 1;
         }
     }
@@ -92,8 +92,30 @@ bool Exchange::AddOrder(Order order) {
 }
 
 void Exchange::PrintUsersOrders(std::ostream &os) {
+    std::sort(this->accountList.begin(), this->accountList.end(), [](auto a, auto b) { 
+        return a.GetName() < b.GetName(); 
+    });
 
+    os << "Users Orders (in alphabetical order):";
+    for (unsigned int accountNumber = 0; accountNumber < this->accountList.size(); accountNumber++) {
+        os << "\n" << this->accountList.at(accountNumber).GetName() << "\'s Open Orders (in chronological order):";
+        for (unsigned int pos = 0; pos < this->openOrders.size(); pos++) {
+            std::cout << accountNumber << " " << this->accountList.at(accountNumber).GetName() << " " << this->openOrders.at(pos).username << "\n";
+            if (this->openOrders.at(pos).username == this->accountList.at(accountNumber).GetName()) {
+                os << "\n" << this->openOrders.at(pos).side << " " << this->openOrders.at(pos).amount << " " << this->openOrders.at(pos).asset << " at " << this->openOrders.at(pos).price << " by " << this->openOrders.at(pos).username;
+            }
+        }
+        os << "\n" <<  this->accountList.at(accountNumber).GetName() << "\'s Filled Orders (in chronological order):";
+    }
+    os << "\n";
 }
+//"Users Orders (in alphabetical order):
+//\nDolson's Open Orders (in chronological order):
+//\nDolson's Filled Orders (in chronological order):
+//\nNahum's Open Orders (in chronological order):
+//\nNahum's Filled Orders (in chronological order):
+//\nOfria's Open Orders (in chronological order):
+//\nOfria's Filled Orders (in chronological order):\n"
 
 void Exchange::PrintTradeHistory(std::ostream &os) {
 

@@ -10,14 +10,14 @@
 class Exchange {
     private:
         std::vector<UserAccount> accountList{};
-        std::vector<Order> openSellOrders{};
-        std::vector<Order> openBuyOrders{};
+        std::vector<Order> openOrders{};
+        std::vector<Order> filledOrders{};
     public:
         std::vector<UserAccount> GetAccountList{};
         void MakeDeposit(std::string username, std::string asset, int amount);
         void PrintUserPortfolios(std::ostream &os);
         bool MakeWithdrawal(std::string username, std::string asset, int amount);
-        bool AddOrder(Order order);
+        bool AddOrder(Order &order);
         void PrintUsersOrders(std::ostream &os);
         void PrintTradeHistory(std::ostream &os);
         void PrintBidAskSpread(std::ostream &os);
