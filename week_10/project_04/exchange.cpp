@@ -78,12 +78,14 @@ bool Exchange::AddOrder(Order order) {
         if (user.GetPortfolio().at("USD") >= order.amount * order.price) {
             this->MakeWithdrawal(order.username, "USD", order.amount * order.price);
             this->openOrders.push_back(order);
+            user.AddOrder(order);
             return 1;
         }
     } else if (order.side == "Sell") {
         if (user.GetPortfolio().at(order.asset) >= order.amount) {
             this->MakeWithdrawal(order.username, order.asset, order.amount);
             this->openOrders.push_back(order);
+            user.AddOrder(order);
             return 1;
         }
     }
@@ -98,13 +100,7 @@ void Exchange::PrintUsersOrders(std::ostream &os) {
 
     os << "Users Orders (in alphabetical order):";
     for (unsigned int accountNumber = 0; accountNumber < this->accountList.size(); accountNumber++) {
-        os << "\n" << this->accountList.at(accountNumber).GetName() << "\'s Open Orders (in chronological order):";
-        for (unsigned int pos = 0; pos < this->openOrders.size(); pos++) {
-            if (this->openOrders.at(pos).username == this->accountList.at(accountNumber).GetName()) {
-                os << "\n" << this->openOrders.at(pos).side << " " << this->openOrders.at(pos).amount << " " << this->openOrders.at(pos).asset << " at " << this->openOrders.at(pos).price << " USD by " << this->openOrders.at(pos).username;
-            }
-        }
-        os << "\n" <<  this->accountList.at(accountNumber).GetName() << "\'s Filled Orders (in chronological order):";
+        accountList.at(accountNumber).PrintOrders(os);
     }
     os << "\n";
 }
