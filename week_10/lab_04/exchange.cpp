@@ -30,7 +30,8 @@ void Exchange::PrintUserPortfolios(std::ostream &os) {
 
     os << "User Portfolios (in alphabetical order):";
     for (unsigned int pos = 0; pos < this->accountList.size(); pos++) {
-        UserAccount user = this->accountList.at(pos);
+        UserAccount &user = this->accountList.at(pos);
+        
         os << "\n" << user.GetName() << "\'s Portfolio: ";
         if (user.GetPortfolio().at("BTC") > 0) {
             os << user.GetPortfolio().at("BTC") << " BTC, ";
@@ -46,7 +47,17 @@ void Exchange::PrintUserPortfolios(std::ostream &os) {
 }
 
 bool Exchange::MakeWithdrawal(std::string username, std::string asset, int amount) {
-    return -1;
+    int position{-1};
+    for (unsigned pos = 0; pos < this->accountList.size(); pos++) {
+        if (this->accountList.at(pos).GetName() == username) {
+            position = pos;
+        }
+    }
+    if (position == -1) {
+        return 0;
+    }
+    
+    return this->accountList.at(position).Withdrawal(asset, amount);
 }
 
 bool Exchange::AddOrder(Order order) {

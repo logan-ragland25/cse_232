@@ -4,24 +4,41 @@
 #include "utility.hpp"
 
 int main() {
-    Exchange e;
-  e.MakeDeposit("Nahum", "BTC", 10);
-  e.MakeDeposit("Nahum", "USD", 8500);
-  e.MakeDeposit("Dolson", "USD", 600);
-  e.MakeDeposit("Nahum", "USD", 500);
-  e.MakeDeposit("Dolson", "ETH", 60);
-  e.MakeDeposit("Nahum", "ETH", 4);
-  e.MakeDeposit("Ofria", "BTC", 100);
-  e.PrintUserPortfolios(std::cout);
-  std::cout << "\n";
-  e.MakeDeposit("Dolson", "ETH", 10);
-  e.PrintUserPortfolios(std::cout);
-  std::cout << "\n";
-  std::ostringstream oss;
-  e.PrintUserPortfolios(oss);
-  std::cout << "\n";
-//   CHECK(oss.str() == "User Portfolios (in alphabetical order):\nDolson's Portfolio: 70 ETH, 600 USD, \nNahum's Portfolio: 10 BTC, 4 ETH, 9000 USD, \nOfria's Portfolio: 100 BTC, \n");
 
+    Exchange e;
+    e.MakeDeposit("Nahum", "BTC", 10);
+    e.PrintUserPortfolios(std::cout);
+    std::cout << (!e.MakeWithdrawal("Dolson", "USD", 10)); // Dolson has no portfolio
+    std::cout << (!e.MakeWithdrawal("Nahum", "USD", 10)); // Nahum has no USD
+    std::cout << (!e.MakeWithdrawal("Nahum", "BTC", 11)); // Nahum doesn't have enough BTC
+    std::cout << (e.MakeWithdrawal("Nahum", "BTC", 6)); // Success!
+    std::cout << "\n\n";
+    std::ostringstream oss;
+    e.PrintUserPortfolios(std::cout);
+    oss.str("");
+    e.PrintUserPortfolios(oss);
+    std::cout << (oss.str() == "User Portfolios (in alphabetical order):\nNahum's Portfolio: 4 BTC, \n");
+    std::cout << (e.MakeWithdrawal("Nahum", "BTC", 4)); 
+    std::cout << "\n\n";
+    // Success! Remove the last of the BTC
+    // Please note that you shouldn't report assets that have an amount of 0.
+    e.PrintUserPortfolios(std::cout);
+    oss.str("");
+    e.PrintUserPortfolios(oss);
+    std::cout << oss.str() << "\nvs\nUser Portfolios (in alphabetical order):\nNahum's Portfolio: \n";
+    std::cout << (oss.str() == "User Portfolios (in alphabetical order):\nNahum's Portfolio: \n");
+    e.MakeDeposit("Dolson", "BTC", 4);
+    e.MakeDeposit("Dolson", "USD", 4000);
+    e.MakeDeposit("Ofria", "ETH", 77);
+    std::cout << (e.MakeWithdrawal("Dolson", "BTC", 1)); 
+    std::cout << (e.MakeWithdrawal("Dolson", "USD", 4000)); 
+    std::cout << (!e.MakeWithdrawal("Ofria", "BTC", 1)); 
+    std::cout << (!e.MakeWithdrawal("Ofria", "Apples", 1)); 
+    std::cout << "\n\n";
+    e.PrintUserPortfolios(std::cout);
+    oss.str("");
+    e.PrintUserPortfolios(oss);
+    std::cout << (oss.str() == "User Portfolios (in alphabetical order):\nDolson's Portfolio: 3 BTC, \nNahum's Portfolio: \nOfria's Portfolio: 77 ETH, \n");
 
 
 
