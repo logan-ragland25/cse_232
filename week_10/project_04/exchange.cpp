@@ -103,107 +103,86 @@ void Exchange::EnactTrade(Order& takerOrder, Order& makerOrder) {
         seller = &taker;
     }
 
-    int price = takerOrder.price;
-    int amountToBuy = std::min(takerOrder.amount, makerOrder.amount);
+    int amountToTrade = std::min(takerOrder.amount, makerOrder.amount);
+    int price = makerOrder.price;
 
-    buyer->Deposit(takerOrder.asset, amountToBuy);
-    seller->Deposit("USD", amountToBuy * price);
+    // Execute balances
+    buyer->Deposit(takerOrder.asset, amountToTrade);
+    seller->Deposit("USD", amountToTrade * price);
 
-    // if (takerOrder.side == "Sell") {
-    //     int makerPrice = makerOrder.price;
-    //     int difference = makerPrice - price;
-    //     if (difference > 0) {
-    //         buyer->Deposit("USD", difference * amountToBuy);
-    //     }
-    // }
-    takerOrder.amount -= amountToBuy;
-    makerOrder.amount -= amountToBuy;
+    // Update orders
+    takerOrder.amount -= amountToTrade;
+    makerOrder.amount -= amountToTrade;
 
-    Trade newTrade{};
-    newTrade.buyer_username = buyer->GetName();
-    newTrade.seller_username = seller->GetName();
-    newTrade.asset = takerOrder.asset;
-    newTrade.amount = amountToBuy;
-    newTrade.price = price;
-    this->tradeHistory.push_back(newTrade);
+    // Record the filled portion for the maker
+    Order filledMaker{};
+    filledMaker.username = makerOrder.username;
+    filledMaker.side = makerOrder.side;
+    filledMaker.asset = takerOrder.asset;
+    filledMaker.amount = amountToTrade;
+    filledMaker.price = price;
+    this->filledOrders.push_back(filledMaker);
+
+    // Record the filled portion for the taker
+    Order filledTaker{};
+    filledTaker.username = takerOrder.username;
+    filledTaker.side = takerOrder.side;
+    filledTaker.asset = takerOrder.asset;
+    filledTaker.amount = amountToTrade;
+    filledTaker.price = price;
+    this->filledOrders.push_back(filledTaker);
 }
 
+void Exchange::Cleave() {
+    for (unsigned int pos = 0; pos < this->filledOrders.size(); pos++) {
+        if (this->filledOrders.at(pos).amount == 0) {
+            this->filledOrders.erase(this->filledOrders.begin() + pos);
+        }
+    }
+}
 void Exchange::ProcessTakerOrder(Order& takerOrder) {
-    if (takerOrder.side == "Buy") {
-        while (takerOrder.amount > 0) {
-            int lowestPricePos = getLowestPrice(takerOrder);
-            if (lowestPricePos == -1) { break; }
+    while (takerOrder.amount > 0) {
+        int matchPos = (takerOrder.side == "Buy") ? getLowestPrice(takerOrder) : getHighestPrice(takerOrder);
 
-            Order &makerOrder = this->openOrders.at(lowestPricePos);
-            Order originalMakerOrder = makerOrder;
+        if (matchPos == -1) break;  // No matching orders
 
-            EnactTrade(takerOrder, makerOrder);
-            
-            if (makerOrder.amount == 0) {
-                this->filledOrders.push_back(originalMakerOrder);
-                this->openOrders.erase(this->openOrders.begin() + lowestPricePos);
-            }
+        Order &makerOrder = this->openOrders.at(matchPos);
+
+        // Execute trade
+        EnactTrade(takerOrder, makerOrder);
+
+        // Remove fully filled maker order
+        if (makerOrder.amount == 0) {
+            this->openOrders.erase(this->openOrders.begin() + matchPos);
         }
-    } 
-    if (takerOrder.side == "Sell") {
-        while (takerOrder.amount > 0) {
-            int highestPricePos = getHighestPrice(takerOrder);
-            if (highestPricePos == -1) { break; }
-            Order &makerOrder = this->openOrders.at(highestPricePos);
-            Order originalMakerOrder = makerOrder;
+    }
 
-            EnactTrade(takerOrder, makerOrder);
-            
-            if (makerOrder.amount == 0) {
-                this->filledOrders.push_back(originalMakerOrder);
-                this->openOrders.erase(this->openOrders.begin() + highestPricePos);
-            }
-        }
-    } 
+    // Any remaining unfilled portion of taker order goes to openOrders
+    if (takerOrder.amount > 0) {
+        this->openOrders.push_back(takerOrder);
+    }
+    Cleave();
 }
+
 
 bool Exchange::AddOrder(Order newOrder) {
     UserAccount& user = GetUser(newOrder.username);
 
-    // If selling price is less than your max price, buy as many as you can
-    // If you are selling, sell until you do not have any more assets
-
-    // Price is determined by BUYER (TAKER)
-
-    Order originalOrder = newOrder;
-
     if (newOrder.side == "Buy") {
-        if (user.GetPortfolio().at("USD") >= newOrder.amount * newOrder.price) {
-            std::cout << "here\n";
-            user.Withdrawal("USD", newOrder.amount * newOrder.price);
-        } else {
-            return 0;
-        }
-    } else if (newOrder.side == "Sell") {
+        int totalCost = newOrder.amount * newOrder.price;
+        if (user.GetPortfolio().at("USD") >= totalCost) {
+            user.Withdrawal("USD", totalCost);
+        } else { return false; }
+    } 
+    else if (newOrder.side == "Sell") {
         if (user.GetPortfolio().at(newOrder.asset) >= newOrder.amount) {
             user.Withdrawal(newOrder.asset, newOrder.amount);
-        } else {
-            return 0;
-        }
-    }
-    
-    ProcessTakerOrder(newOrder);
-    Order fullfilledOrder = newOrder;
-    fullfilledOrder.amount = originalOrder.amount + fullfilledOrder.amount;
-        
-    if (newOrder.amount < originalOrder.amount) {
-        Order filledPart = originalOrder;
-        filledPart.amount = originalOrder.amount - newOrder.amount;
-        this->filledOrders.push_back(filledPart);
-        return 1;
+        } else { return false; }
     }
 
-    if (newOrder.amount > 0) {
-        this->openOrders.push_back(newOrder);
-        return 1;
-    }
-    
-    return 0;
+    ProcessTakerOrder(newOrder);
+
+    return true;
 }
 
 void Exchange::PrintUsersOrders(std::ostream &os) {

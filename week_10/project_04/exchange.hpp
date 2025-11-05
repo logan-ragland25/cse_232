@@ -27,4 +27,5 @@ class Exchange {
         int getHighestPrice(Order &order);
         void EnactTrade(Order &takerOrder, Order &makerOrder);
         bool UserExists(std::string name);
+        void Cleave();
 };
