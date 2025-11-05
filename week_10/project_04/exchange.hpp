@@ -12,6 +12,7 @@ class Exchange {
         std::vector<UserAccount> accountList{};
         std::vector<Order> openOrders{};
         std::vector<Order> filledOrders{};
+        std::vector<Trade> tradeHistory{};
     public:
         std::vector<UserAccount> GetAccountList{};
         void MakeDeposit(std::string username, std::string asset, int amount);
@@ -22,4 +23,9 @@ class Exchange {
         void PrintTradeHistory(std::ostream &os);
         void PrintBidAskSpread(std::ostream &os);
         UserAccount& GetUser(std::string name);
+        void ProcessTakerOrder(Order &takerOrder);
+        int getLowestPrice(Order &order);
+        int getHighestPrice(Order &order);
+        void EnactTrade(Order &takerOrder, Order &makerOrder);
+        bool UserExists(std::string name);
 };

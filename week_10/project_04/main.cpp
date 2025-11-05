@@ -5,27 +5,38 @@
 
 int main() {
     Exchange e;
-    std::ostringstream oss;
-
     e.MakeDeposit("Nahum", "BTC", 10);
-    e.MakeDeposit("Nahum", "USD", 500);
-    e.MakeDeposit("Dolson", "USD", 1000);
-    e.MakeDeposit("Ofria", "ETH", 44); 
-    e.AddOrder({"Nahum", "Sell", "BTC", 50, 1000});
-    e.AddOrder({"Nahum", "Buy", "BTC", 50, 200});
-    e.AddOrder({"Nahum", "Sell", "BTC", 4, 1000});
-    e.AddOrder({"Nahum", "Buy", "ETH", 3, 2});
-    e.AddOrder({"Dolson", "Buy", "BTC", 7, 1});
-    e.AddOrder({"Ofria", "Sell", "ETH", 2, 500});
-    
+    e.PrintUserPortfolios(std::cout);
+    std::cout << std::endl;
+    e.MakeWithdrawal("Dolson", "USD", 10); // Dolson has no portfolio
+    e.MakeWithdrawal("Nahum", "USD", 10); // Nahum has no USD
+    e.MakeWithdrawal("Nahum", "BTC", 11); // Nahum doesn't have enough BTC
+    e.MakeWithdrawal("Nahum", "BTC", 6); // Success!
+    std::ostringstream oss;
+    e.PrintUserPortfolios(std::cout);
     oss.str("");
     e.PrintUserPortfolios(oss);
-    std::cout << oss.str() << "\n";
-    oss.str("");
-    e.PrintUsersOrders(oss);
-    std::cout << oss.str() << "\n";
-    std::cout << "j: " << (oss.str() == "Users Orders (in alphabetical order):\nDolson's Open Orders (in chronological order):\nBuy 7 BTC at 1 USD by Dolson\nDolson's Filled Orders (in chronological order):\nNahum's Open Orders (in chronological order):\nSell 4 BTC at 1000 USD by Nahum\nBuy 3 ETH at 2 USD by Nahum\nNahum's Filled Orders (in chronological order):\nOfria's Open Orders (in chronological order):\nSell 2 ETH at 500 USD by Ofria\nOfria's Filled Orders (in chronological order):\n") << "\n";
-    return 0;
+    std::cout << (oss.str() == "User Portfolios (in alphabetical order):\nNahum's Portfolio: 4 BTC, \n");
+    // CHECK(e.MakeWithdrawal("Nahum", "BTC", 4)); 
+    // // Success! Remove the last of the BTC
+    // // Please note that you shouldn't report assets that have an amount of 0.
+    // e.PrintUserPortfolios(std::cout);
+    // oss.str("");
+    // e.PrintUserPortfolios(oss);
+    // CHECK(oss.str() == "User Portfolios (in alphabetical order):\nNahum's Portfolio: \n");
+    // e.MakeDeposit("Dolson", "BTC", 4);
+    // e.MakeDeposit("Dolson", "USD", 4000);
+    // e.MakeDeposit("Ofria", "ETH", 77);
+    // CHECK(e.MakeWithdrawal("Dolson", "BTC", 1)); 
+    // CHECK(e.MakeWithdrawal("Dolson", "USD", 4000)); 
+    // CHECK(!e.MakeWithdrawal("Ofria", "BTC", 1)); 
+    // CHECK(!e.MakeWithdrawal("Ofria", "Apples", 1)); 
+    // e.PrintUserPortfolios(std::cout);
+    // oss.str("");
+    // e.PrintUserPortfolios(oss);
+    // CHECK(oss.str() == "User Portfolios (in alphabetical order):\nDolson's Portfolio: 3 BTC, \nNahum's Portfolio: \nOfria's Portfolio: 77 ETH, \n");
+  
+  return 0;
 }
 
 
