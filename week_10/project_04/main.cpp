@@ -6,16 +6,15 @@
 int main() {
     Exchange e;
     std::ostringstream oss;
-    e.MakeDeposit("Nahum", "BTC", 10);
-    e.MakeDeposit("Dolson", "USD", 5555);
+    e.MakeDeposit("Nahum", "BTC", 1000);
+    e.MakeDeposit("Dolson", "USD", 555555);
     e.AddOrder({"Nahum", "Sell", "BTC", 5, 100});
-    e.AddOrder({"Dolson", "Buy", "BTC", 7, 100});
-    e.AddOrder({"Nahum", "Sell", "BTC", 3, 100});
+    e.AddOrder({"Dolson", "Buy", "BTC", 70, 150});
+    e.AddOrder({"Nahum", "Sell", "BTC", 30, 125});
     oss.str("");
-    e.PrintUsersOrders (oss);
-    std::cout << oss.str() << "\n" << "Users Orders (in alphabetical order):\nDolson's Open Orders (in chronological order):\nDolson's Filled Orders (in chronological order):\nBuy 5 BTC at 100 USD by Dolson\nBuy 2 BTC at 100 USD by Dolson\nNahum's Open Orders (in chronological order):\nSell 1 BTC at 100 USD by Nahum\nNahum's Filled Orders (in chronological order):\nSell 5 BTC at 100 USD by Nahum\nSell 2 BTC at 100 USD by Nahum\n";
-    std::cout << (oss.str() == "Users Orders (in alphabetical order):\nDolson's Open Orders (in chronological order):\nDolson's Filled Orders (in chronological order):\nBuy 5 BTC at 100 USD by Dolson\nBuy 2 BTC at 100 USD by Dolson\nNahum's Open Orders (in chronological order):\nSell 1 BTC at 100 USD by Nahum\nNahum's Filled Orders (in chronological order):\nSell 5 BTC at 100 USD by Nahum\nSell 2 BTC at 100 USD by Nahum\n");
-    
+    e.PrintUsersOrders(oss);
+    std::cout << (oss.str() == "Users Orders (in alphabetical order):\nDolson's Open Orders (in chronological order):\nBuy 35 BTC at 150 USD by Dolson\nDolson's Filled Orders (in chronological order):\nBuy 5 BTC at 150 USD by Dolson\nBuy 30 BTC at 125 USD by Dolson\nNahum's Open Orders (in chronological order):\nNahum's Filled Orders (in chronological order):\nSell 5 BTC at 150 USD by Nahum\nSell 30 BTC at 125 USD by Nahum\n");
+    std::cout << (e.MakeWithdrawal("Dolson", "BTC", 35));
     
     return 0;
 }

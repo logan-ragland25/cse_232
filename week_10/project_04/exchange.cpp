@@ -104,7 +104,7 @@ void Exchange::EnactTrade(Order& takerOrder, Order& makerOrder) {
     }
 
     int amountToTrade = std::min(takerOrder.amount, makerOrder.amount);
-    int price = makerOrder.price;
+    int price = takerOrder.price;
 
     // Execute balances
     buyer->Deposit(takerOrder.asset, amountToTrade);
