@@ -7,15 +7,31 @@ int main() {
     Exchange e;
     std::ostringstream oss;
     e.MakeDeposit("Nahum", "BTC", 1000);
+    e.MakeDeposit("Nahum", "USD", 100000);
     e.MakeDeposit("Dolson", "USD", 555555);
-    e.AddOrder({"Nahum", "Sell", "BTC", 5, 100});
-    e.AddOrder({"Dolson", "Buy", "BTC", 70, 150});
-    e.AddOrder({"Nahum", "Sell", "BTC", 30, 125});
-    e.AddOrder({"Nahum", "Sell", "BTC", 40, 120});
-    e.PrintTradeHistory(std::cout);
+    e.MakeDeposit("Ofria", "ETH", 678);
+    e.MakeDeposit("Zaabar", "USD", 12121212);
+    e.MakeDeposit("Zaabar", "LTC", 4563);
+    // BTC rough price 1000
+    // ETH rough price 100
+    // LTC rough price 500
+    e.AddOrder({"Nahum", "Sell", "BTC", 5, 1100});
+    e.AddOrder({"Nahum", "Sell", "BTC", 100, 1200});
+    e.AddOrder({"Nahum", "Buy", "BTC", 7, 800});
+    e.AddOrder({"Dolson", "Buy", "BTC", 1, 950});
+    e.AddOrder({"Ofria", "Sell", "ETH", 12, 156});
+    e.AddOrder({"Ofria", "Sell", "ETH", 10, 160});
+    e.AddOrder({"Zaabar", "Sell", "LTC", 10, 550});
+    e.AddOrder({"Zaabar", "Buy", "LTC", 10, 450});
+    e.AddOrder({"Nahum", "Buy", "LTC", 55, 600});
+    e.AddOrder({"Nahum", "Buy", "ETH", 30, 158});
+    e.AddOrder({"Ofria", "Sell", "ETH", 10, 140});
+    e.AddOrder({"Zaabar", "Buy", "BTC", 1000, 1500});
+    e.AddOrder({"Zaabar", "Buy", "ETH", 200, 1200});
+    e.PrintUsersOrders(std::cout);
     oss.str("");
-    e.PrintTradeHistory(oss);
-    std::cout << (oss.str() == "Trade History (in chronological order):\nDolson Bought 5 of BTC From Nahum for 150 USD\nDolson Bought 30 of BTC From Nahum for 125 USD\nDolson Bought 35 of BTC From Nahum for 120 USD\n");
+    e.PrintUsersOrders(oss);
+    std::cout << (oss.str() == "Users Orders (in alphabetical order):\nDolson's Open Orders (in chronological order):\nBuy 1 BTC at 950 USD by Dolson\nDolson's Filled Orders (in chronological order):\nNahum's Open Orders (in chronological order):\nBuy 7 BTC at 800 USD by Nahum\nBuy 45 LTC at 600 USD by Nahum\nBuy 8 ETH at 158 USD by Nahum\nNahum's Filled Orders (in chronological order):\nBuy 10 LTC at 600 USD by Nahum\nBuy 12 ETH at 158 USD by Nahum\nBuy 10 ETH at 140 USD by Nahum\nSell 5 BTC at 1500 USD by Nahum\nSell 100 BTC at 1500 USD by Nahum\nOfria's Open Orders (in chronological order):\nOfria's Filled Orders (in chronological order):\nSell 12 ETH at 158 USD by Ofria\nSell 10 ETH at 140 USD by Ofria\nSell 10 ETH at 1200 USD by Ofria\nZaabar's Open Orders (in chronological order):\nBuy 10 LTC at 450 USD by Zaabar\nBuy 895 BTC at 1500 USD by Zaabar\nBuy 190 ETH at 1200 USD by Zaabar\nZaabar's Filled Orders (in chronological order):\nSell 10 LTC at 600 USD by Zaabar\nBuy 5 BTC at 1500 USD by Zaabar\nBuy 100 BTC at 1500 USD by Zaabar\nBuy 10 ETH at 1200 USD by Zaabar\n");
     return 0;
 }
 

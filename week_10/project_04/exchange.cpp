@@ -51,13 +51,16 @@ void Exchange::PrintUserPortfolios(std::ostream &os) {
         UserAccount &user = this->accountList.at(pos);
         
         os << "\n" << user.GetName() << "\'s Portfolio: ";
-        if (user.GetPortfolio().at("BTC") > 0) {
+        if (user.GetPortfolio().count("BTC") && user.GetPortfolio().at("BTC") > 0) {
             os << user.GetPortfolio().at("BTC") << " BTC, ";
         }
-        if (user.GetPortfolio().at("ETH") > 0) {
+        if (user.GetPortfolio().count("ETH") && user.GetPortfolio().at("ETH") > 0) {
             os << user.GetPortfolio().at("ETH") << " ETH, ";
         }
-        if (user.GetPortfolio().at("USD") > 0) {
+        if (user.GetPortfolio().count("LTC") && user.GetPortfolio().at("LTC") > 0) {
+            os << user.GetPortfolio().at("LTC") << " LTC, ";
+        }
+        if (user.GetPortfolio().count("USD") && user.GetPortfolio().at("USD") > 0) {
             os << user.GetPortfolio().at("USD") << " USD, ";
         }
     }
@@ -169,7 +172,7 @@ void Exchange::ProcessTakerOrder(Order& takerOrder) {
     if (takerOrder.amount > 0) {
         this->openOrders.push_back(takerOrder);
     }
-    Cleave();
+    //Cleave();
 }
 
 
@@ -211,7 +214,7 @@ void Exchange::PrintUsersOrders(std::ostream &os) {
 
         os << "\n" << user.GetName() << "\'s Filled Orders (in chronological order):";
         for (unsigned int pos = 0; pos < this->filledOrders.size(); pos++) {
-            if (this->filledOrders.at(pos).username == user.GetName()) {
+            if (this->filledOrders.at(pos).username == user.GetName() && this->filledOrders.at(pos).amount != 0) {
                 os << "\n" << this->filledOrders.at(pos);
             }
         }
