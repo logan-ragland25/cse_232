@@ -36,7 +36,7 @@ bool UserAccount::AddOrder(Order order) {
 }
 
 void UserAccount::PerformBuy(Order buy_order, Trade trade) {
-
+    
 }
 
 void UserAccount::PerformSell(Order sell_order, Trade trade) {
@@ -56,7 +56,7 @@ std::string UserAccount::GetName() {
     return this->name;
 }
 
-std::map<std::string, int>& UserAccount::GetPortfolio() {
+std::map<std::string, int> UserAccount::GetPortfolio() {
     return this->portfolio;
 }
 

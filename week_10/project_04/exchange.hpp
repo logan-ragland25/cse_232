@@ -22,6 +22,4 @@ class Exchange {
         void PrintTradeHistory(std::ostream &os);
         void PrintBidAskSpread(std::ostream &os);
         UserAccount& GetUser(std::string name);
-        void CheckTrades();
-        void CleanUpVec();
 };
