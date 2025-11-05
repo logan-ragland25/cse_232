@@ -131,6 +131,14 @@ void Exchange::EnactTrade(Order& takerOrder, Order& makerOrder) {
     filledTaker.amount = amountToTrade;
     filledTaker.price = price;
     this->filledOrders.push_back(filledTaker);
+
+    Trade trade{};
+    trade.seller_username = seller->GetName();
+    trade.buyer_username = buyer->GetName();
+    trade.amount = amountToTrade;
+    trade.asset = makerOrder.asset;
+    trade.price = price;
+    this->tradeHistory.push_back(trade);
 }
 
 void Exchange::Cleave() {
@@ -212,7 +220,11 @@ void Exchange::PrintUsersOrders(std::ostream &os) {
 }
 
 void Exchange::PrintTradeHistory(std::ostream &os) {
-
+    os << "Trade History (in chronological order):";
+    for (unsigned int pos = 0; pos < this->tradeHistory.size(); pos++) {
+        os << "\n" << this->tradeHistory.at(pos).buyer_username << " Bought " << this->tradeHistory.at(pos).amount << " of " << this->tradeHistory.at(pos).asset << " From " << this->tradeHistory.at(pos).seller_username << " for " << this->tradeHistory.at(pos).price << " USD";
+    }
+    os << "\n";
 }
 
 void Exchange::PrintBidAskSpread(std::ostream &os) {

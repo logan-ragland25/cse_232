@@ -11,11 +11,11 @@ int main() {
     e.AddOrder({"Nahum", "Sell", "BTC", 5, 100});
     e.AddOrder({"Dolson", "Buy", "BTC", 70, 150});
     e.AddOrder({"Nahum", "Sell", "BTC", 30, 125});
+    e.AddOrder({"Nahum", "Sell", "BTC", 40, 120});
+    e.PrintTradeHistory(std::cout);
     oss.str("");
-    e.PrintUsersOrders(oss);
-    std::cout << (oss.str() == "Users Orders (in alphabetical order):\nDolson's Open Orders (in chronological order):\nBuy 35 BTC at 150 USD by Dolson\nDolson's Filled Orders (in chronological order):\nBuy 5 BTC at 150 USD by Dolson\nBuy 30 BTC at 125 USD by Dolson\nNahum's Open Orders (in chronological order):\nNahum's Filled Orders (in chronological order):\nSell 5 BTC at 150 USD by Nahum\nSell 30 BTC at 125 USD by Nahum\n");
-    std::cout << (e.MakeWithdrawal("Dolson", "BTC", 35));
-    
+    e.PrintTradeHistory(oss);
+    std::cout << (oss.str() == "Trade History (in chronological order):\nDolson Bought 5 of BTC From Nahum for 150 USD\nDolson Bought 30 of BTC From Nahum for 125 USD\nDolson Bought 35 of BTC From Nahum for 120 USD\n");
     return 0;
 }
 
