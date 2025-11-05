@@ -63,6 +63,9 @@ void Exchange::PrintUserPortfolios(std::ostream &os) {
         if (user.GetPortfolio().count("USD") && user.GetPortfolio().at("USD") > 0) {
             os << user.GetPortfolio().at("USD") << " USD, ";
         }
+        if (user.GetPortfolio().count("BCH") && user.GetPortfolio().at("BCH") > 0) {
+            os << user.GetPortfolio().at("BCH") << " BCH, ";
+        }
     }
     os << "\n";
 }
@@ -231,5 +234,43 @@ void Exchange::PrintTradeHistory(std::ostream &os) {
 }
 
 void Exchange::PrintBidAskSpread(std::ostream &os) {
+    std::vector<std::string> assets = {"BCH", "BTC", "ETH", "LTC"};
+    os << "Asset Bid Ask Spread (in alphabetical order):\n";
 
+    for (unsigned int assetType = 0; assetType < assets.size(); assetType++) {
+        int lowestOpenSell = 1000000;
+        int highestOpenBuy = -1;
+
+        for (unsigned int orderNumber = 0; orderNumber < this->openOrders.size(); orderNumber++) {
+            if (assets.at(assetType) == this->openOrders.at(orderNumber).asset) {
+                if (this->openOrders.at(orderNumber).side == "Buy" && this->openOrders.at(orderNumber).amount > 0) {
+                    if (this->openOrders.at(orderNumber).price > highestOpenBuy) {
+                        highestOpenBuy = this->openOrders.at(orderNumber).price;
+                    } 
+                }       
+                else if (this->openOrders.at(orderNumber).side == "Sell" && this->openOrders.at(orderNumber).amount > 0) {
+                    if (this->openOrders.at(orderNumber).price < lowestOpenSell) {
+                        lowestOpenSell = this->openOrders.at(orderNumber).price;
+                    }
+                }
+            }
+        }
+        os << assets.at(assetType) << ": Highest Open Buy = ";
+        if (highestOpenBuy == -1) {
+            os << "NA";
+        }
+        else {
+            os << highestOpenBuy; 
+        }
+
+        os << " USD and Lowest Open Sell = ";
+        
+        if (lowestOpenSell == 1000000) {
+            os << "NA";
+        }
+        else {
+            os << lowestOpenSell;
+        }
+        os << " USD\n";
+    }
 }

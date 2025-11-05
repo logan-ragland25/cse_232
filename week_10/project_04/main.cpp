@@ -26,12 +26,15 @@ int main() {
     e.AddOrder({"Nahum", "Buy", "LTC", 55, 600});
     e.AddOrder({"Nahum", "Buy", "ETH", 30, 158});
     e.AddOrder({"Ofria", "Sell", "ETH", 10, 140});
-    e.AddOrder({"Zaabar", "Buy", "BTC", 1000, 1500});
+    e.AddOrder({"Zaabar", "Buy", "BTC", 10, 1500});
     e.AddOrder({"Zaabar", "Buy", "ETH", 200, 1200});
-    e.PrintUsersOrders(std::cout);
+    e.AddOrder({"Nahum", "Sell", "BTC", 30, 158});
+    e.AddOrder({"Dolson", "Buy", "BTC", 20, 2000});
+    e.AddOrder({"Nahum", "Sell", "ETH", 1, 1423});
     oss.str("");
-    e.PrintUsersOrders(oss);
-    std::cout << (oss.str() == "Users Orders (in alphabetical order):\nDolson's Open Orders (in chronological order):\nBuy 1 BTC at 950 USD by Dolson\nDolson's Filled Orders (in chronological order):\nNahum's Open Orders (in chronological order):\nBuy 7 BTC at 800 USD by Nahum\nBuy 45 LTC at 600 USD by Nahum\nBuy 8 ETH at 158 USD by Nahum\nNahum's Filled Orders (in chronological order):\nBuy 10 LTC at 600 USD by Nahum\nBuy 12 ETH at 158 USD by Nahum\nBuy 10 ETH at 140 USD by Nahum\nSell 5 BTC at 1500 USD by Nahum\nSell 100 BTC at 1500 USD by Nahum\nOfria's Open Orders (in chronological order):\nOfria's Filled Orders (in chronological order):\nSell 12 ETH at 158 USD by Ofria\nSell 10 ETH at 140 USD by Ofria\nSell 10 ETH at 1200 USD by Ofria\nZaabar's Open Orders (in chronological order):\nBuy 10 LTC at 450 USD by Zaabar\nBuy 895 BTC at 1500 USD by Zaabar\nBuy 190 ETH at 1200 USD by Zaabar\nZaabar's Filled Orders (in chronological order):\nSell 10 LTC at 600 USD by Zaabar\nBuy 5 BTC at 1500 USD by Zaabar\nBuy 100 BTC at 1500 USD by Zaabar\nBuy 10 ETH at 1200 USD by Zaabar\n");
+    e.PrintBidAskSpread(oss);
+    std::cout << oss.str() << "\n" << "Asset Bid Ask Spread (in alphabetical order):\nBTC: Highest Open Buy = NA USD and Lowest Open Sell = 158 USD\nETH: Highest Open Buy = 1200 USD and Lowest Open Sell = 1423 USD\nLTC: Highest Open Buy = 600 USD and Lowest Open Sell = NA USD\n";
+    std::cout << (oss.str() == "Asset Bid Ask Spread (in alphabetical order):\nBTC: Highest Open Buy = NA USD and Lowest Open Sell = 158 USD\nETH: Highest Open Buy = 1200 USD and Lowest Open Sell = 1423 USD\nLTC: Highest Open Buy = 600 USD and Lowest Open Sell = NA USD\n");
     return 0;
 }
 

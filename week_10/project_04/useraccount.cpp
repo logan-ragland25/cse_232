@@ -8,7 +8,7 @@
 // Constructor
 UserAccount::UserAccount(std::string name) {
     this->name = name;
-    this->portfolio = {{"BTC", 0}, {"USD", 0}, {"ETH", 0}, {"LTC", 0}};
+    this->portfolio = {{"BTC", 0}, {"USD", 0}, {"ETH", 0}, {"LTC", 0}, {"BCH", 0}};
 }
 
 //Dont need trades
