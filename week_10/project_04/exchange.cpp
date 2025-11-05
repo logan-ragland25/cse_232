@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <sstream>
+#include <iostream>
 
 UserAccount& Exchange::GetUser(std::string name) {
     for (unsigned pos = 0; pos < this->accountList.size(); pos++) {
@@ -50,6 +51,52 @@ void Exchange::PrintUserPortfolios(std::ostream &os) {
     os << "\n";
 }
 
+void Exchange::CleanUpVec() {
+    for (unsigned int pos = 0; pos < this->openOrders.size(); pos++) {
+        if (this->openOrders.at(pos).side == "DEL") {
+            this->openOrders.erase(this->openOrders.begin() + pos);
+            pos = 0;
+        }
+    }
+}
+
+void Exchange::CheckTrades() {
+    for (unsigned int me = 0; me < this->openOrders.size(); me++) {
+        if (this->openOrders.at(me).side == "Buy") {
+            for (unsigned int you = 0; you < this->openOrders.size(); you++) {
+                if (this->openOrders.at(me).username != this->openOrders.at(you).username && this->openOrders.at(you).side == "Sell" && this->openOrders.at(me).asset == this->openOrders.at(you).asset && this->openOrders.at(me).price >= this->openOrders.at(you).price) {
+                    std::string asset = this->openOrders.at(me).asset;
+                    // std::cout << this->openOrders.at(me).username << " Should Buy " << this->openOrders.at(me).amount << " " << this->openOrders.at(me).asset <<  " From " << this->openOrders.at(you).username << "\n";
+                    UserAccount &myAccount = GetUser(this->openOrders.at(me).username);
+                    UserAccount &yourAccount = GetUser(this->openOrders.at(you).username);
+
+                    std::map<std::string, int>& myPortfolio = myAccount.GetPortfolio();
+                    std::map<std::string, int>& yourPortfolio = yourAccount.GetPortfolio();
+
+                    // std::cout << yourAccount.GetPortfolio().at(asset) << " >= 0 and " << myAccount.GetPortfolio().at("USD") << " >= " << this->openOrders.at(you).price << "\n";
+                    while (yourPortfolio.at(asset) > 0 && myPortfolio.at("USD") >= this->openOrders.at(you).price) {
+                        yourPortfolio.at(asset) = yourPortfolio.at(asset) - 1;
+                        yourPortfolio.at("USD") = yourPortfolio.at("USD") + this->openOrders.at(you).price;
+
+                        myPortfolio.at("USD") = myPortfolio.at("USD") - this->openOrders.at(you).price;
+                        myPortfolio.at(asset) = myPortfolio.at(asset) + 1;
+                        
+                        std::cout << myAccount.GetName() << " now has " << myPortfolio.at(asset) << " " << asset << ", " << yourAccount.GetName() << " now has " << yourPortfolio.at(asset) << " " << asset << "\n";
+                        
+                        this->openOrders.at(me).amount -= 1;
+                        this->openOrders.at(you).amount -= 1;
+                    }
+                    // Dolson's Portfolio: 5 BTC, 5055 USD, 
+                    // Nahum's Portfolio: 5 BTC, 500 USD
+                    this->openOrders.at(you).side = "DEL";
+                    this->openOrders.at(me).side = "DEL";
+                }
+            }
+        }
+    }
+    CleanUpVec();
+}
+
 bool Exchange::AddOrder(Order order) {
     UserAccount& user = GetUser(order.username);
 
@@ -58,6 +105,7 @@ bool Exchange::AddOrder(Order order) {
             this->MakeWithdrawal(order.username, "USD", order.amount * order.price);
             this->openOrders.push_back(order);
             user.AddOrder(order);
+            CheckTrades();
             return 1;
         }
     } else if (order.side == "Sell") {
@@ -65,10 +113,11 @@ bool Exchange::AddOrder(Order order) {
             this->MakeWithdrawal(order.username, order.asset, order.amount);
             this->openOrders.push_back(order);
             user.AddOrder(order);
+            CheckTrades();
             return 1;
         }
     }
-    
+
     return 0;
 }
 

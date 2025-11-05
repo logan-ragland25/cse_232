@@ -27,6 +27,6 @@ class UserAccount {
 
         // Getters
         std::string GetName(); // *
-        std::map<std::string, int> GetPortfolio(); // *
+        std::map<std::string, int>& GetPortfolio(); // *
         std::vector<Order> GetOpenOrders(); // *
 };
