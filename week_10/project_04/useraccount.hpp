@@ -21,9 +21,6 @@ class UserAccount {
 
         // Involves Trading
         bool AddOrder(Order order);
-        void PerformBuy(Order buy_order, Trade trade);
-        void PerformSell(Order sell_order, Trade trade);
-        void PrintOrders(std::ostream &os);
 
         // Getters
         std::string GetName(); // *

@@ -7,6 +7,7 @@
 #include <sstream>
 #include <iostream>
 
+// Loop through all accounts and detect if user exists
 bool Exchange::UserExists(std::string name) {
     for (unsigned pos = 0; pos < this->accountList.size(); pos++) {
         if (this->accountList.at(pos).GetName() == name) {
@@ -16,21 +17,26 @@ bool Exchange::UserExists(std::string name) {
     return false;
 }
 
-UserAccount& Exchange::GetUser(std::string name) {
+// Find and return a user
+UserAccount &Exchange::GetUser(std::string name) {
     for (unsigned pos = 0; pos < this->accountList.size(); pos++) {
         if (this->accountList.at(pos).GetName() == name) {
             return this->accountList.at(pos);
         }
     }
+
+    // If user does not exist, create one
     accountList.push_back(UserAccount(name)); 
     return this->accountList.back();
 }
 
+// Get user and deposit the stated amount in the stated asset
 void Exchange::MakeDeposit(std::string username, std::string asset, int amount) {
     UserAccount &user = GetUser(username);
     user.Deposit(asset, amount);
 }
 
+// Get user and withdraw the stated amount from the stated asset
 bool Exchange::MakeWithdrawal(std::string username, std::string asset, int amount) {
     if (UserExists(username)) {
         UserAccount &user = GetUser(username);
@@ -42,15 +48,17 @@ bool Exchange::MakeWithdrawal(std::string username, std::string asset, int amoun
 
 void Exchange::PrintUserPortfolios(std::ostream &os) {
     // https://algocademy.com/link/?problem=sorting&lang=cpp&solution=1
-    std::sort(this->accountList.begin(), this->accountList.end(), [](auto a, auto b) { 
-        return a.GetName() < b.GetName(); 
-    });
+    std::sort(this->accountList.begin(), this->accountList.end(), [](auto a, auto b) { return a.GetName() < b.GetName(); });
 
     os << "User Portfolios (in alphabetical order):";
+
+    // Loop through all accounts
     for (unsigned int pos = 0; pos < this->accountList.size(); pos++) {
         UserAccount &user = this->accountList.at(pos);
         
         os << "\n" << user.GetName() << "\'s Portfolio: ";
+        
+        // State amount if it is greater than zero
         if (user.GetPortfolio().count("BTC") && user.GetPortfolio().at("BTC") > 0) {
             os << user.GetPortfolio().at("BTC") << " BTC, ";
         }
@@ -63,13 +71,11 @@ void Exchange::PrintUserPortfolios(std::ostream &os) {
         if (user.GetPortfolio().count("USD") && user.GetPortfolio().at("USD") > 0) {
             os << user.GetPortfolio().at("USD") << " USD, ";
         }
-        if (user.GetPortfolio().count("BCH") && user.GetPortfolio().at("BCH") > 0) {
-            os << user.GetPortfolio().at("BCH") << " BCH, ";
-        }
     }
     os << "\n";
 }
 
+// Loop through orders and find which is selling for lowest price
 int Exchange::getLowestPrice(Order& order) {
     int lowest = 1000000000;
     int lowestPos = -1;
@@ -82,6 +88,7 @@ int Exchange::getLowestPrice(Order& order) {
     return lowestPos;
 }
 
+// Loop through orders and find which is selling for highest price
 int Exchange::getHighestPrice(Order& order) {
     int highest = 0;
     int highestPos = -1;
@@ -95,12 +102,14 @@ int Exchange::getHighestPrice(Order& order) {
 }
 
 void Exchange::EnactTrade(Order& takerOrder, Order& makerOrder) {
+    // Modify actual account information
     UserAccount &taker = GetUser(takerOrder.username);
     UserAccount &maker = GetUser(makerOrder.username);
 
     UserAccount* buyer;
     UserAccount* seller;
 
+    // Figure out which account is buying and which is selling
     if (takerOrder.side == "Buy") {
         buyer = &taker;
         seller = &maker;
@@ -109,10 +118,11 @@ void Exchange::EnactTrade(Order& takerOrder, Order& makerOrder) {
         seller = &taker;
     }
 
+    // Figure out information about transaction
     int amountToTrade = std::min(takerOrder.amount, makerOrder.amount);
     int price = takerOrder.price;
 
-    // Execute balances
+    // Adjust balances
     buyer->Deposit(takerOrder.asset, amountToTrade);
     seller->Deposit("USD", amountToTrade * price);
 
@@ -120,7 +130,7 @@ void Exchange::EnactTrade(Order& takerOrder, Order& makerOrder) {
     takerOrder.amount -= amountToTrade;
     makerOrder.amount -= amountToTrade;
 
-    // Record the filled portion for the maker
+    // Record the transactions
     Order filledMaker{};
     filledMaker.username = makerOrder.username;
     filledMaker.side = makerOrder.side;
@@ -129,7 +139,6 @@ void Exchange::EnactTrade(Order& takerOrder, Order& makerOrder) {
     filledMaker.price = price;
     this->filledOrders.push_back(filledMaker);
 
-    // Record the filled portion for the taker
     Order filledTaker{};
     filledTaker.username = takerOrder.username;
     filledTaker.side = takerOrder.side;
@@ -147,22 +156,20 @@ void Exchange::EnactTrade(Order& takerOrder, Order& makerOrder) {
     this->tradeHistory.push_back(trade);
 }
 
-void Exchange::Cleave() {
-    for (unsigned int pos = 0; pos < this->filledOrders.size(); pos++) {
-        if (this->filledOrders.at(pos).amount == 0) {
-            this->filledOrders.erase(this->filledOrders.begin() + pos);
-        }
-    }
-}
 void Exchange::ProcessTakerOrder(Order& takerOrder) {
     while (takerOrder.amount > 0) {
-        int matchPos = (takerOrder.side == "Buy") ? getLowestPrice(takerOrder) : getHighestPrice(takerOrder);
+        int matchPos{};
+        if (takerOrder.side == "Buy") {
+            matchPos = getLowestPrice(takerOrder);
+        } else {
+            matchPos = getHighestPrice(takerOrder);
+        }
 
-        if (matchPos == -1) break;  // No matching orders
+        if (matchPos == -1) { break; }
 
         Order &makerOrder = this->openOrders.at(matchPos);
 
-        // Execute trade
+        // Enact trade
         EnactTrade(takerOrder, makerOrder);
 
         // Remove fully filled maker order
@@ -171,17 +178,17 @@ void Exchange::ProcessTakerOrder(Order& takerOrder) {
         }
     }
 
-    // Any remaining unfilled portion of taker order goes to openOrders
+    // Any remaining orders should still be in open orders
     if (takerOrder.amount > 0) {
         this->openOrders.push_back(takerOrder);
     }
-    //Cleave();
 }
-
 
 bool Exchange::AddOrder(Order newOrder) {
     UserAccount& user = GetUser(newOrder.username);
 
+    // See if recieved order is to buy or sell
+    // Adjust account accordingly
     if (newOrder.side == "Buy") {
         int totalCost = newOrder.amount * newOrder.price;
         if (user.GetPortfolio().at("USD") >= totalCost) {
@@ -196,15 +203,18 @@ bool Exchange::AddOrder(Order newOrder) {
 
     ProcessTakerOrder(newOrder);
 
-    return true;
+    return 1;
 }
 
 void Exchange::PrintUsersOrders(std::ostream &os) {
-    std::sort(this->accountList.begin(), this->accountList.end(), [](auto a, auto b) { 
-        return a.GetName() < b.GetName(); 
-    });
+    // Sort list (https://algocademy.com/link/?problem=sorting&lang=cpp&solution=1)
+    std::sort(this->accountList.begin(), this->accountList.end(), [](auto a, auto b) { return a.GetName() < b.GetName(); });
 
     os << "Users Orders (in alphabetical order):";
+
+    // Loop through accounts, then loop through orders
+    // If the user has open orders, list them
+    // If the user has fullfilled orders, also list them
     for (unsigned int accountNumber = 0; accountNumber < this->accountList.size(); accountNumber++) {
         UserAccount &user = this->accountList.at(accountNumber);
         os << "\n" << user.GetName() << "\'s Open Orders (in chronological order):";
@@ -225,6 +235,7 @@ void Exchange::PrintUsersOrders(std::ostream &os) {
     os << "\n";
 }
 
+// Loop through all trades and list the info in them
 void Exchange::PrintTradeHistory(std::ostream &os) {
     os << "Trade History (in chronological order):";
     for (unsigned int pos = 0; pos < this->tradeHistory.size(); pos++) {
@@ -233,8 +244,9 @@ void Exchange::PrintTradeHistory(std::ostream &os) {
     os << "\n";
 }
 
+// For each asset, look through open orders and find what the current highest bid price and lowest sell price are
 void Exchange::PrintBidAskSpread(std::ostream &os) {
-    std::vector<std::string> assets = {"BCH", "BTC", "ETH", "LTC"};
+    std::vector<std::string> assets = {"BTC", "ETH", "LTC"};
     os << "Asset Bid Ask Spread (in alphabetical order):\n";
 
     for (unsigned int assetType = 0; assetType < assets.size(); assetType++) {
