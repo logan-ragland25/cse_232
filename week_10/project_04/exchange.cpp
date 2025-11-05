@@ -109,6 +109,13 @@ void Exchange::EnactTrade(Order& takerOrder, Order& makerOrder) {
     buyer->Deposit(takerOrder.asset, amountToBuy);
     seller->Deposit("USD", amountToBuy * price);
 
+    // if (takerOrder.side == "Sell") {
+    //     int makerPrice = makerOrder.price;
+    //     int difference = makerPrice - price;
+    //     if (difference > 0) {
+    //         buyer->Deposit("USD", difference * amountToBuy);
+    //     }
+    // }
     takerOrder.amount -= amountToBuy;
     makerOrder.amount -= amountToBuy;
 
@@ -167,6 +174,7 @@ bool Exchange::AddOrder(Order newOrder) {
 
     if (newOrder.side == "Buy") {
         if (user.GetPortfolio().at("USD") >= newOrder.amount * newOrder.price) {
+            std::cout << "here\n";
             user.Withdrawal("USD", newOrder.amount * newOrder.price);
         } else {
             return 0;
@@ -178,15 +186,20 @@ bool Exchange::AddOrder(Order newOrder) {
             return 0;
         }
     }
+    
     ProcessTakerOrder(newOrder);
     Order fullfilledOrder = newOrder;
     fullfilledOrder.amount = originalOrder.amount + fullfilledOrder.amount;
         
+    if (newOrder.amount < originalOrder.amount) {
+        Order filledPart = originalOrder;
+        filledPart.amount = originalOrder.amount - newOrder.amount;
+        this->filledOrders.push_back(filledPart);
+        return 1;
+    }
+
     if (newOrder.amount > 0) {
         this->openOrders.push_back(newOrder);
-        return 1;
-    } else {
-        this->filledOrders.push_back(fullfilledOrder);
         return 1;
     }
     

@@ -56,7 +56,7 @@ std::string UserAccount::GetName() {
     return this->name;
 }
 
-std::map<std::string, int> UserAccount::GetPortfolio() {
+std::map<std::string, int>& UserAccount::GetPortfolio() {
     return this->portfolio;
 }
 

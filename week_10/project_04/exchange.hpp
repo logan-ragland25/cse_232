@@ -14,7 +14,6 @@ class Exchange {
         std::vector<Order> filledOrders{};
         std::vector<Trade> tradeHistory{};
     public:
-        std::vector<UserAccount> GetAccountList{};
         void MakeDeposit(std::string username, std::string asset, int amount);
         void PrintUserPortfolios(std::ostream &os);
         bool MakeWithdrawal(std::string username, std::string asset, int amount);

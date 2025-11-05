@@ -5,37 +5,20 @@
 
 int main() {
     Exchange e;
-    e.MakeDeposit("Nahum", "BTC", 10);
-    e.PrintUserPortfolios(std::cout);
-    std::cout << std::endl;
-    e.MakeWithdrawal("Dolson", "USD", 10); // Dolson has no portfolio
-    e.MakeWithdrawal("Nahum", "USD", 10); // Nahum has no USD
-    e.MakeWithdrawal("Nahum", "BTC", 11); // Nahum doesn't have enough BTC
-    e.MakeWithdrawal("Nahum", "BTC", 6); // Success!
     std::ostringstream oss;
-    e.PrintUserPortfolios(std::cout);
-    oss.str("");
-    e.PrintUserPortfolios(oss);
-    std::cout << (oss.str() == "User Portfolios (in alphabetical order):\nNahum's Portfolio: 4 BTC, \n");
-    // CHECK(e.MakeWithdrawal("Nahum", "BTC", 4)); 
-    // // Success! Remove the last of the BTC
-    // // Please note that you shouldn't report assets that have an amount of 0.
+    e.MakeDeposit("Nahum", "BTC", 10);
+    e.MakeDeposit("Dolson", "USD", 5555);
+    e.AddOrder({"Nahum", "Sell", "BTC", 5, 100});
+    std::cout << (e.AddOrder({"Dolson", "Buy", "BTC", 5, 100}));
+    // // This trade exactly matches Nahum's Sell
     // e.PrintUserPortfolios(std::cout);
     // oss.str("");
     // e.PrintUserPortfolios(oss);
-    // CHECK(oss.str() == "User Portfolios (in alphabetical order):\nNahum's Portfolio: \n");
-    // e.MakeDeposit("Dolson", "BTC", 4);
-    // e.MakeDeposit("Dolson", "USD", 4000);
-    // e.MakeDeposit("Ofria", "ETH", 77);
-    // CHECK(e.MakeWithdrawal("Dolson", "BTC", 1)); 
-    // CHECK(e.MakeWithdrawal("Dolson", "USD", 4000)); 
-    // CHECK(!e.MakeWithdrawal("Ofria", "BTC", 1)); 
-    // CHECK(!e.MakeWithdrawal("Ofria", "Apples", 1)); 
-    // e.PrintUserPortfolios(std::cout);
+    // CHECK(oss.str() == "User Portfolios (in alphabetical order):\nDolson's Portfolio: 5 BTC, 5055 USD, \nNahum's Portfolio: 5 BTC, 500 USD, \n");
+    // e.PrintUsersOrders (std::cout);
     // oss.str("");
-    // e.PrintUserPortfolios(oss);
-    // CHECK(oss.str() == "User Portfolios (in alphabetical order):\nDolson's Portfolio: 3 BTC, \nNahum's Portfolio: \nOfria's Portfolio: 77 ETH, \n");
-  
+    // e.PrintUsersOrders (oss);
+    // CHECK(oss.str() == "Users Orders (in alphabetical order):\nDolson's Open Orders (in chronological order):\nDolson's Filled Orders (in chronological order):\nBuy 5 BTC at 100 USD by Dolson\nNahum's Open Orders (in chronological order):\nNahum's Filled Orders (in chronological order):\nSell 5 BTC at 100 USD by Nahum\n");
   return 0;
 }
 
