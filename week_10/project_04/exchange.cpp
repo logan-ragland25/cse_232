@@ -6,7 +6,22 @@
 #include <algorithm>
 #include <sstream>
 
+UserAccount& Exchange::GetUser(std::string name) {
+    for (unsigned pos = 0; pos < this->accountList.size(); pos++) {
+        if (this->accountList.at(pos).GetName() == name) {
+            return this->accountList.at(pos);
+        }
+    }
+    accountList.push_back(UserAccount(name)); 
+    return this->accountList.back();
+}
+
 void Exchange::MakeDeposit(std::string username, std::string asset, int amount) {
+    UserAccount &user = GetUser(username);
+    user.Deposit(asset, amount);
+}
+
+bool Exchange::MakeWithdrawal(std::string username, std::string asset, int amount) {
     int position{-1};
     for (unsigned pos = 0; pos < this->accountList.size(); pos++) {
         if (this->accountList.at(pos).GetName() == username) {
@@ -14,15 +29,13 @@ void Exchange::MakeDeposit(std::string username, std::string asset, int amount) 
         }
     }
     if (position == -1) {
-        accountList.push_back(UserAccount(username));
-        position = this->accountList.size() - 1;
+        return 0;
     }
     
-    this->accountList.at(position).Deposit(asset, amount);
+    return this->accountList.at(position).Withdrawal(asset, amount);
 }
 
 void Exchange::PrintUserPortfolios(std::ostream &os) {
-
     // https://algocademy.com/link/?problem=sorting&lang=cpp&solution=1
     std::sort(this->accountList.begin(), this->accountList.end(), [](auto a, auto b) { 
         return a.GetName() < b.GetName(); 
@@ -44,20 +57,6 @@ void Exchange::PrintUserPortfolios(std::ostream &os) {
         }
     }
     os << "\n";
-}
-
-bool Exchange::MakeWithdrawal(std::string username, std::string asset, int amount) {
-    int position{-1};
-    for (unsigned pos = 0; pos < this->accountList.size(); pos++) {
-        if (this->accountList.at(pos).GetName() == username) {
-            position = pos;
-        }
-    }
-    if (position == -1) {
-        return 0;
-    }
-    
-    return this->accountList.at(position).Withdrawal(asset, amount);
 }
 
 bool Exchange::AddOrder(Order order) {

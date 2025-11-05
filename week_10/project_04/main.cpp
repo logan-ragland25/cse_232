@@ -19,6 +19,9 @@ int main() {
     e.AddOrder({"Ofria", "Sell", "ETH", 2, 500});
     
     oss.str("");
+    e.PrintUserPortfolios(oss);
+    std::cout << oss.str() << "\n";
+    oss.str("");
     e.PrintUsersOrders(oss);
     std::cout << oss.str() << "\n";
     std::cout << "j: " << (oss.str() == "Users Orders (in alphabetical order):\nDolson's Open Orders (in chronological order):\nBuy 7 BTC at 1 USD by Dolson\nDolson's Filled Orders (in chronological order):\nNahum's Open Orders (in chronological order):\nSell 4 BTC at 1000 USD by Nahum\nBuy 3 ETH at 2 USD by Nahum\nNahum's Filled Orders (in chronological order):\nOfria's Open Orders (in chronological order):\nSell 2 ETH at 500 USD by Ofria\nOfria's Filled Orders (in chronological order):\n") << "\n";

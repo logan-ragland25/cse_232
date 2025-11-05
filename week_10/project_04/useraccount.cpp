@@ -62,5 +62,5 @@ std::map<std::string, int> UserAccount::GetPortfolio() {
 }
 
 std::vector<Order> UserAccount::GetOpenOrders() {
-    return std::vector<Order>{};
+    return this->openOrders;
 }

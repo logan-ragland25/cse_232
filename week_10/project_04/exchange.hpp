@@ -21,4 +21,5 @@ class Exchange {
         void PrintUsersOrders(std::ostream &os);
         void PrintTradeHistory(std::ostream &os);
         void PrintBidAskSpread(std::ostream &os);
+        UserAccount& GetUser(std::string name);
 };
