@@ -11,7 +11,6 @@ UserAccount::UserAccount(std::string name) {
     this->portfolio = {{"BTC", 0}, {"USD", 0}, {"ETH", 0}};
 }
 
-
 //Dont need trades
 //https://stackoverflow.com/questions/3136520/determine-if-map-contains-a-value-for-a-key
 void UserAccount::Deposit(std::string asset, int amount) {
@@ -37,7 +36,7 @@ bool UserAccount::AddOrder(Order order) {
 }
 
 void UserAccount::PerformBuy(Order buy_order, Trade trade) {
-
+    
 }
 
 void UserAccount::PerformSell(Order sell_order, Trade trade) {

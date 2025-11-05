@@ -22,17 +22,8 @@ void Exchange::MakeDeposit(std::string username, std::string asset, int amount) 
 }
 
 bool Exchange::MakeWithdrawal(std::string username, std::string asset, int amount) {
-    int position{-1};
-    for (unsigned pos = 0; pos < this->accountList.size(); pos++) {
-        if (this->accountList.at(pos).GetName() == username) {
-            position = pos;
-        }
-    }
-    if (position == -1) {
-        return 0;
-    }
-    
-    return this->accountList.at(position).Withdrawal(asset, amount);
+    UserAccount &user = GetUser(username);
+    return user.Withdrawal(asset, amount);
 }
 
 void Exchange::PrintUserPortfolios(std::ostream &os) {
@@ -60,18 +51,7 @@ void Exchange::PrintUserPortfolios(std::ostream &os) {
 }
 
 bool Exchange::AddOrder(Order order) {
-    int position{-1};
-    for (unsigned pos = 0; pos < this->accountList.size(); pos++) {
-        if (this->accountList.at(pos).GetName() == order.username) {
-            position = pos;
-            break;
-        }
-    }
-    if (position == -1) {
-        return 0;
-    }
-
-    UserAccount& user = this->accountList.at(position);
+    UserAccount& user = GetUser(order.username);
 
     if (order.side == "Buy") {
         if (user.GetPortfolio().at("USD") >= order.amount * order.price) {
@@ -103,13 +83,6 @@ void Exchange::PrintUsersOrders(std::ostream &os) {
     }
     os << "\n";
 }
-//"Users Orders (in alphabetical order):
-//\nDolson's Open Orders (in chronological order):
-//\nDolson's Filled Orders (in chronological order):
-//\nNahum's Open Orders (in chronological order):
-//\nNahum's Filled Orders (in chronological order):
-//\nOfria's Open Orders (in chronological order):
-//\nOfria's Filled Orders (in chronological order):\n"
 
 void Exchange::PrintTradeHistory(std::ostream &os) {
 
