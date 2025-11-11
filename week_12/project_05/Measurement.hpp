@@ -13,7 +13,7 @@ class Measurement {
 
 public:
     Measurement (double value, double uncertainty, std::string unit);
-    void Measurement::alterUnits(std::string unit, int value);
+    void alterUnits(std::string unit, int value);
     std::string convertToScientific(double value);
     std::string ToString();
     Measurement Add(Measurement value);

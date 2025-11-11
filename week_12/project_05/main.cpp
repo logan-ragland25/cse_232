@@ -2,19 +2,19 @@
 #include "Measurement.hpp"
 int main() {
     
-    // Measurement m_1(22.00, 0.03, "m");
-    // Measurement m_2(10.88, 0.4, "sec");
-    // Measurement m_3{m_1.Multiply(m_2)};
-    // std::cout << m_3.ToString() << "\n" << "2.39e+02 +- 8.81e+00 m sec \n";
-    // std::cout << (m_3.ToString() == "2.39e+02 +- 8.81e+00 m sec ");
+    Measurement m_1(22.00, 0.03, "m");
+    Measurement m_2(10.88, 0.4, "sec");
+    Measurement m_3{m_1.Multiply(m_2)};
+    std::cout << m_3.ToString() << "\n" << "2.39e+02 +- 8.81e+00 m sec \n";
+    std::cout << (m_3.ToString() == "2.39e+02 +- 8.81e+00 m sec ");
     Measurement m_4(22.00, 0.03, "liter");
     Measurement m_5(12, 0.04, "celsius");
     Measurement m_6{m_4.Divide(m_5)};
     std::cout << (m_6.ToString() == "1.83e+00 +- 6.60e-03 celsius^-1 liter ");
-    // Measurement m_7(22.00, 0.03, "count");
-    // Measurement m_8(12, 0.04, "celsius");
-    // Measurement m_9{m_1.Divide(m_2)};
-    // std::cout << (m_9.ToString() == "2.02e+00 +- 7.44e-02 m sec^-1 ");
+    Measurement m_7(22.00, 0.03, "count");
+    Measurement m_8(12, 0.04, "celsius");
+    Measurement m_9{m_1.Divide(m_2)};
+    std::cout << (m_9.ToString() == "2.02e+00 +- 7.44e-02 m sec^-1 ");
 
 
 //   Measurement m_1{2.00, 0.03, "sec"};
