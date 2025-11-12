@@ -20,6 +20,20 @@ void Measurement::alterUnits(std::string unit, int value) {
     }
 }
 
+void copyUnits(Measurement &newMeasurement, Measurement measurement1, Measurement measurement2) {
+    Measurement combinedMeasurement = measurement1;
+    
+    for (std::pair<const std::string, int> entry : measurement2.unitMap) {
+        if (combinedMeasurement.unitMap.find(entry.first) != combinedMeasurement.unitMap.end()) {
+            combinedMeasurement.unitMap.at(entry.first) = combinedMeasurement.unitMap.at(entry.first) + entry.second;
+        } else {
+            combinedMeasurement.unitMap.insert(combinedMeasurement.unitMap.begin(), {entry.first, entry.second});
+        }
+    }
+
+    newMeasurement = combinedMeasurement;
+}
+
 std::string Measurement::convertToScientific(double value) {
     std::ostringstream oss;
     oss << std::scientific << std::setprecision(2);

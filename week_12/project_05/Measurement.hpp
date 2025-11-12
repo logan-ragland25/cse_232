@@ -9,11 +9,12 @@ class Measurement {
     double value{};
     double uncertainty{};
     std::string unit{};
-    std::map<std::string, int> unitMap{};
 
 public:
+    std::map<std::string, int> unitMap{};
     Measurement (double value, double uncertainty, std::string unit);
     void alterUnits(std::string unit, int value);
+    void copyUnits(Measurement &newMeasurement, Measurement measurement1, Measurement measurement2);
     std::string convertToScientific(double value);
     std::string ToString();
     Measurement Add(Measurement value);

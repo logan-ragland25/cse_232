@@ -5,16 +5,18 @@ int main() {
     Measurement m_1(22.00, 0.03, "m");
     Measurement m_2(10.88, 0.4, "sec");
     Measurement m_3{m_1.Multiply(m_2)};
-    std::cout << m_3.ToString() << "\n" << "2.39e+02 +- 8.81e+00 m sec \n";
-    std::cout << (m_3.ToString() == "2.39e+02 +- 8.81e+00 m sec ");
-    Measurement m_4(22.00, 0.03, "liter");
-    Measurement m_5(12, 0.04, "celsius");
-    Measurement m_6{m_4.Divide(m_5)};
-    std::cout << (m_6.ToString() == "1.83e+00 +- 6.60e-03 celsius^-1 liter ");
-    Measurement m_7(22.00, 0.03, "count");
-    Measurement m_8(12, 0.04, "celsius");
-    Measurement m_9{m_1.Divide(m_2)};
-    std::cout << (m_9.ToString() == "2.02e+00 +- 7.44e-02 m sec^-1 ");
+    Measurement m_4{m_3.Multiply(m_2)};
+    Measurement m_5{m_4.Multiply(m_2)};
+    std::cout << m_5.ToString() << "\n";
+    std::cout << "2.83e+04 +- 1.80e+03 m sec^3 " << "\n";
+    std::cout << (m_5.ToString() == "2.83e+04 +- 1.80e+03 m sec^3 ");
+    // Measurement m_6(22.00, 0.03, "liter");
+    // Measurement m_7(12, 0.04, "celsius");
+    // Measurement m_8{m_7.Divide(m_6)};
+    // Measurement m_9{m_8.Divide(m_5)};
+    // Measurement m_10{m_9.Divide(m_3)};
+    // Measurement m_11{m_9.Multiply(m_8)};
+    // std::cout << (m_11.ToString() == "1.05e-05 +- 6.71e-07 celsius^2 liter^-2 m^-1 sec^-3 ");
 
 
 //   Measurement m_1{2.00, 0.03, "sec"};
