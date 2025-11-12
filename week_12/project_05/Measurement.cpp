@@ -5,33 +5,13 @@
 #include <iomanip>
 #include <cmath>
 #include <algorithm>
+#include <map>
 
 Measurement::Measurement (double value, double uncertainty, std::string unit) {
     this->value = value;
     this->uncertainty = uncertainty;
     this->unit = unit;
-}
-
-void Measurement::alterUnits(std::string unit, int value) {
-    if (this->unitMap.find(unit) != this->unitMap.end()) {
-        this->unitMap.at(unit) = this->unitMap.at(unit) + value;
-    } else {
-        this->unitMap.insert(this->unitMap.begin(), {unit, value});
-    }
-}
-
-void copyUnits(Measurement &newMeasurement, Measurement measurement1, Measurement measurement2) {
-    Measurement combinedMeasurement = measurement1;
-    
-    for (std::pair<const std::string, int> entry : measurement2.unitMap) {
-        if (combinedMeasurement.unitMap.find(entry.first) != combinedMeasurement.unitMap.end()) {
-            combinedMeasurement.unitMap.at(entry.first) = combinedMeasurement.unitMap.at(entry.first) + entry.second;
-        } else {
-            combinedMeasurement.unitMap.insert(combinedMeasurement.unitMap.begin(), {entry.first, entry.second});
-        }
-    }
-
-    newMeasurement = combinedMeasurement;
+    this->unitMap.insert({unit, 1});
 }
 
 std::string Measurement::convertToScientific(double value) {
@@ -56,28 +36,56 @@ std::string Measurement::ToString() {
     return oss.str();
 }
 
+void Measurement::changeUnits(std::string unit, int amount) {
+    if (this->unitMap.count(unit) > 0) {
+        this->unitMap.at(unit) += amount;
+    } else {
+        this->unitMap.insert({unit, amount});
+    }
+}
+
+void Measurement::multiply(std::map<std::string, int> map) {
+    for (std::pair<const std::string, int> entry : map) {
+        if (this->unitMap.count(entry.first) > 0) {
+            this->unitMap.at(entry.first) += entry.second;
+        } else {
+            this->unitMap.insert({entry.first, entry.second});
+        }
+    } 
+}
+
+void Measurement::denominate(std::map<std::string, int> map) {
+    for (std::pair<const std::string, int> entry : map) {
+        if (this->unitMap.count(entry.first) > 0) {
+            this->unitMap.at(entry.first) += -1 * entry.second;
+        } else {
+            this->unitMap.insert({entry.first, -1 * entry.second});
+        }
+    } 
+}
+
 Measurement Measurement::Add(Measurement val) {
     if (val.unit != this->unit) {
         throw std::invalid_argument("units are different");
+    } else {
+        double totalValue = this->value + val.value;
+        double totalUncertainty = pow(pow(this->uncertainty, 2) + pow(val.uncertainty,2), 0.5);
+        Measurement newMeasurement = Measurement(totalValue, totalUncertainty, this->unit);
+        newMeasurement.unitMap = this->unitMap;
+        return newMeasurement;
     }
-
-    double totalValue = this->value + val.value;
-    double totalUncertainty = pow(pow(this->uncertainty, 2) + pow(val.uncertainty,2), 0.5);
-    Measurement newMeasurement = Measurement(totalValue, totalUncertainty, this->unit);
-    newMeasurement.alterUnits(newMeasurement.unit, 1);
-    return newMeasurement;
 }
 
 Measurement Measurement::Subtract(Measurement val) {
     if (val.unit != this->unit) {
         throw std::invalid_argument("units are different");
-    }
-
-    double totalValue = this->value - val.value;
-    double totalUncertainty = pow(pow(this->uncertainty, 2) + pow(val.uncertainty,2), 0.5);
-    Measurement newMeasurement = Measurement(totalValue, totalUncertainty, this->unit);
-    newMeasurement.alterUnits(newMeasurement.unit, 1);
-    return newMeasurement;
+    } else {
+        double totalValue = this->value - val.value;
+        double totalUncertainty = pow(pow(this->uncertainty, 2) + pow(val.uncertainty,2), 0.5);
+        Measurement newMeasurement = Measurement(totalValue, totalUncertainty, this->unit);
+        newMeasurement.unitMap = this->unitMap;
+        return newMeasurement;
+    }    
 }
 
 Measurement Measurement::Multiply(Measurement val) {
@@ -85,8 +93,8 @@ Measurement Measurement::Multiply(Measurement val) {
     double totalUncertainty = pow(pow(this->uncertainty / this->value, 2) + pow(val.uncertainty / val.value,2), 0.5) * totalValue;
     std::string totalUnit = this->unit + " " + val.unit;
     Measurement newMeasurement = Measurement(totalValue, totalUncertainty, totalUnit);
-    newMeasurement.alterUnits(this->unit, 1);
-    newMeasurement.alterUnits(val.unit, 1);
+    newMeasurement.unitMap = this->unitMap;
+    newMeasurement.multiply(val.unitMap);
     return newMeasurement;
 }
 
@@ -96,7 +104,7 @@ Measurement Measurement::Divide(Measurement val) {
     double totalUncertainty = pow(pow(this->uncertainty / this->value, 2) + pow(val.uncertainty / val.value,2), 0.5) * totalValue;
     std::string totalUnit = this->unit + " " + val.unit;
     Measurement newMeasurement = Measurement(totalValue, totalUncertainty, totalUnit);
-    newMeasurement.alterUnits(this->unit, 1);
-    newMeasurement.alterUnits(val.unit, -1);
+    newMeasurement.unitMap = this->unitMap;
+    newMeasurement.denominate(val.unitMap);
     return newMeasurement;
 }
