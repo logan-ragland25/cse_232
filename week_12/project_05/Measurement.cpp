@@ -24,7 +24,12 @@ std::string Measurement::convertToScientific(double value) {
 std::string Measurement::ToString() {
     std::ostringstream oss;
     std::ostringstream totalUnit;
+    
     for (std::pair<const std::string, int> entry : this->unitMap) {
+        if (entry.first == "") {
+            oss << this->convertToScientific(this->value) << " +- " << this->convertToScientific(this->uncertainty) << " ";
+            return oss.str();
+        }
         if (entry.second == 1) {
             totalUnit << entry.first << " ";
         } else {
@@ -64,6 +69,12 @@ void Measurement::denominate(std::map<std::string, int> map) {
     } 
 }
 
+void Measurement::unitPow(int power) {
+    for (std::pair<const std::string, int> entry : this->unitMap) {
+        this->unitMap.at(entry.first) = entry.second * power;
+    } 
+}
+
 Measurement Measurement::Add(Measurement val) {
     if (val.unit != this->unit) {
         throw std::invalid_argument("units are different");
@@ -98,7 +109,6 @@ Measurement Measurement::Multiply(Measurement val) {
     return newMeasurement;
 }
 
-
 Measurement Measurement::Divide(Measurement val) {
     double totalValue = this->value / val.value;
     double totalUncertainty = pow(pow(this->uncertainty / this->value, 2) + pow(val.uncertainty / val.value,2), 0.5) * totalValue;
@@ -106,5 +116,21 @@ Measurement Measurement::Divide(Measurement val) {
     Measurement newMeasurement = Measurement(totalValue, totalUncertainty, totalUnit);
     newMeasurement.unitMap = this->unitMap;
     newMeasurement.denominate(val.unitMap);
+    return newMeasurement;
+}
+
+Measurement Measurement::RaisedToPower(int power) {
+    if (power == 0) {
+        Measurement newMeasurement = Measurement(1, 0, "");
+        this->unitMap.clear();
+        return newMeasurement;
+    }
+    double totalUncertainty = std::abs(power  * pow(this->value, (power - 1))) * this->uncertainty;
+    double totalValue = pow(this->value, power);
+    std::string totalUnit = this->unit;
+    Measurement newMeasurement = Measurement(totalValue, totalUncertainty, totalUnit);
+    newMeasurement.unitMap = this->unitMap;
+    newMeasurement.unitPow(power);
+    
     return newMeasurement;
 }

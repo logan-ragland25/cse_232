@@ -1,26 +1,24 @@
 #include <iostream>
 #include "Measurement.hpp"
 int main() {
-    
     Measurement m_1(22.00, 0.03, "m");
-    Measurement m_2(10.88, 0.4, "sec");
-    Measurement m_3{m_1.Multiply(m_2)};
-    Measurement m_4{m_3.Multiply(m_2)};
-    Measurement m_5{m_4.Multiply(m_2)};
-    Measurement m_6(22.00, 0.03, "liter");
-    Measurement m_7(12, 0.04, "celsius");
-    Measurement m_8{m_7.Divide(m_6)};
-    Measurement m_9{m_8.Divide(m_5)};
-    Measurement m_10{m_9.Divide(m_3)};
-    Measurement m_11{m_9.Multiply(m_8)};
-    std::cout << m_9.ToString() << "\n";
-    std::cout << m_8.ToString() << "\n";
-    std::cout << m_11.ToString() << "\n";
-    std::cout << m_11.ToString() << "\n";
-    std::cout << "1.05e-05 +- 6.71e-07 celsius^2 liter^-2 m^-1 sec^-3 " << "\n";
-    std::cout << (m_11.ToString() == "1.05e-05 +- 6.71e-07 celsius^2 liter^-2 m^-1 sec^-3 ");
-
-
+    Measurement m_2{m_1.RaisedToPower(2)};
+    std::cout << (m_2.ToString() == "4.84e+02 +- 1.32e+00 m^2 ");
+    Measurement m_3(10.88, 0.4, "sec");
+    Measurement m_4{m_3.RaisedToPower(-7)};
+    std::cout << (m_4.ToString() == "5.54e-08 +- 1.43e-08 sec^-7 ");
+    Measurement m_5(12.88, 0.4, "sec");
+    Measurement m_6{m_5.RaisedToPower(3)};
+    std::cout << (m_6.ToString() == "2.14e+03 +- 1.99e+02 sec^3 ");
+    Measurement m_7(12.88, 0.4, "sec");
+    Measurement m_8{m_7.RaisedToPower(0)};
+    std::cout << (m_8.ToString() == "1.00e+00 +- 0.00e+00 ");
+    Measurement m_9(12.88, 0.4, "sec");
+    Measurement m_10{m_9.RaisedToPower(1)};
+    std::cout << (m_10.ToString() == "1.29e+01 +- 4.00e-01 sec ");
+    Measurement m_11(2.88, 0.04, "josh");
+    Measurement m_12{m_1.RaisedToPower(4)};
+    std::cout << (m_12.ToString() == "2.34e+05 +- 1.28e+03 m^4 ");
 //   Measurement m_1{2.00, 0.03, "sec"};
 //   std::cout << m_1.ToString() << std::endl;
 //   // 2.00e+00 +- 3.00e-02 sec
