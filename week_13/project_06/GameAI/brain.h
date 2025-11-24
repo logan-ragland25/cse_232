@@ -9,11 +9,14 @@
 class Brain
 {
 public:
+    int prevPosition [2] = {1,1};
+    int prevMove {};
     Brain();                               // Constructor
     int getNextMove(GameState &gamestate); // Returns the next move for the AI
-    bool validMove(GameState &gamestate, int move);
-    int prevDirection{3};
-    bool directionWithMostSpaces (GameState &GameState);
+    int basicMovement(GameState &gameState);
+    int getPlayerRowInVisionArray (GameState &gameState);
+    int getPlayerColInVisionArray (GameState &gameState);
+    int DirectionToMoveTowardsFood(GameState &gameState);
 };
 
 #endif // BRAIN_H
