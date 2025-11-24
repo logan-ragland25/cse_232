@@ -1,7 +1,7 @@
 CXX = g++
-CXXFLAGS = -std=c++20 -Wall
+CXXFLAGS = -std=c++20 -Wall -g
 SRC = main.cpp Game/game.cpp Game/player.cpp GameAI/brain.cpp Game/enemy.cpp
-OUT = run.out
+OUT = a.out
 
 all: $(OUT)
 
