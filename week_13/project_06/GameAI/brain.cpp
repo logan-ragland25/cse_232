@@ -42,10 +42,12 @@ int Brain::chooseMove(GameState &gameState) {
     int nextMove{};
 
     if (gameState.stage == 0) {
-        nextMove = stageOneLogic(gameState);
+        nextMove = stageZeroLogic(gameState);
     } else if (gameState.stage == 1) {
-        nextMove = stageTwoLogic(gameState);
+        nextMove = stageOneLogic(gameState);
     } else if (gameState.stage == 2) {
+        nextMove = stageTwoLogic(gameState);
+    } else if (gameState.stage == 3) {
         nextMove = stageThreeLogic(gameState);
     }
 
@@ -71,7 +73,7 @@ bool Brain::validMove(GameState &gameState, int direction) {
     return 0;
 }
 
-int Brain::stageOneLogic(GameState &gameState) {
+int Brain::stageZeroLogic(GameState &gameState) {
     int playerRow = getPlayerRowInVisionArray(gameState);
     int playerCol = getPlayerColInVisionArray(gameState);
 
@@ -114,7 +116,7 @@ void Brain::checkForFood(GameState &gameState, int move) {
     }
 }
 
-int Brain::stageTwoLogic(GameState &gameState) { 
+int Brain::stageOneLogic(GameState &gameState) { 
     //Get all food in current row
     int playerRow = getPlayerRowInVisionArray(gameState);
     int playerCol = getPlayerColInVisionArray(gameState);
@@ -143,14 +145,14 @@ int Brain::stageTwoLogic(GameState &gameState) {
             }
         }
     } else {
-        return stageOneLogic(gameState);
+        return stageZeroLogic(gameState);
     }
     
     return 1;
 }
 
 
-int Brain::stageThreeLogic(GameState &gameState) {
+int Brain::stageTwoLogic(GameState &gameState) {
     if (validMove(gameState, 4) && this->prevDirection != 2) {
         this->prevDirection = 4;
         return 4;
@@ -169,3 +171,26 @@ int Brain::stageThreeLogic(GameState &gameState) {
     }
     return 0;
 }
+
+int Brain::stageThreeLogic(GameState &gameState) {
+    for (unsigned int row = 0; row < gameState.vision.size(); row++) {
+        for (unsigned int col = 0; col < gameState.vision.at(row).size(); col++) {
+            char character = gameState.vision[row][col];
+            if (character == 'A') {
+                aPos[0]=  row;
+                aPos[1]=  col;
+            }
+            if (character == 'B') {
+                bPos[0]=  row;
+                bPos[1]=  col;
+            }
+        }
+    }
+    if (aPos[0] == -1) {
+        return stageTwoLogic(gameState);
+    } else {
+        std::cout << "Attempting to head towards " << aPos[0] << ", " << aPos[1] << "\n";
+    }
+    return 0;
+}
+

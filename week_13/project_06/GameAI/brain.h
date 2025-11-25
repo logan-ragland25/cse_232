@@ -10,6 +10,9 @@ class Brain
 {
 public:
     int prevPosition [2] = {1,1};
+    int aPos [2] = {-1,-1};
+    int bPos [2] = {-1,-1};
+
     int prevMove {};
     int prevDirection {};
     int foodRemaining{17};
@@ -21,10 +24,13 @@ public:
 
     bool validMove(GameState &gameState, int direction);
 
-    int stageOneLogic(GameState &gameState);
+    int stageZeroLogic(GameState &gameState);
 
-    int stageTwoLogic(GameState &gameState);
+    int stageOneLogic(GameState &gameState);
     void checkForFood(GameState &gameState, int move);
+    
+    int stageTwoLogic(GameState &gameState);
+
     
     int stageThreeLogic(GameState &gameState);
 };
