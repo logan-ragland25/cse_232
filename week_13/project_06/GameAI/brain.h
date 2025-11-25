@@ -11,12 +11,17 @@ class Brain
 public:
     int prevPosition [2] = {1,1};
     int prevMove {};
+    int foodRemaining{17};
     Brain();                               // Constructor
     int getNextMove(GameState &gamestate); // Returns the next move for the AI
-    int basicMovement(GameState &gameState);
+    int chooseMove(GameState &gameState);
     int getPlayerRowInVisionArray (GameState &gameState);
     int getPlayerColInVisionArray (GameState &gameState);
-    int DirectionToMoveTowardsFood(GameState &gameState);
+
+    int stageOneLogic(GameState &gameState);
+
+    int stageTwoLogic(GameState &gameState);
+    void checkForFood(int move, GameState &gameState);
 };
 
 #endif // BRAIN_H
