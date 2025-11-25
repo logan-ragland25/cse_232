@@ -45,9 +45,30 @@ int Brain::chooseMove(GameState &gameState) {
         nextMove = stageOneLogic(gameState);
     } else if (gameState.stage == 1) {
         nextMove = stageTwoLogic(gameState);
+    } else if (gameState.stage == 2) {
+        nextMove = stageThreeLogic(gameState);
     }
 
     return nextMove;
+}
+
+bool Brain::validMove(GameState &gameState, int direction) {
+    int playerRow = getPlayerRowInVisionArray(gameState);
+    int playerCol = getPlayerColInVisionArray(gameState);
+
+    if (direction == 1 && gameState.vision.at(playerRow - 1).at(playerCol) != '+') {
+        return 1;
+    }
+    if (direction == 2 && gameState.vision.at(playerRow).at(playerCol - 1) != '+') {
+        return 1;
+    }
+    if (direction == 3 && gameState.vision.at(playerRow + 1).at(playerCol) != '+') {
+        return 1;
+    }
+    if (direction == 4 && gameState.vision.at(playerRow).at(playerCol + 1) != '+') {
+        return 1;
+    }
+    return 0;
 }
 
 int Brain::stageOneLogic(GameState &gameState) {
@@ -67,7 +88,7 @@ int Brain::stageOneLogic(GameState &gameState) {
     return 0;
 }
 
-void Brain::checkForFood(int move, GameState &gameState) {
+void Brain::checkForFood(GameState &gameState, int move) {
     int playerRow = getPlayerRowInVisionArray(gameState);
     int playerCol = getPlayerColInVisionArray(gameState);
 
@@ -98,26 +119,25 @@ int Brain::stageTwoLogic(GameState &gameState) {
     int playerRow = getPlayerRowInVisionArray(gameState);
     int playerCol = getPlayerColInVisionArray(gameState);
 
-    std::cout << this->foodRemaining << "\n";
     if (this->foodRemaining > 0) {
         if (this->prevMove == 4) {
             if (gameState.vision.at(playerRow).at(playerCol + 1) == '+' || gameState.vision.at(playerRow).at(playerCol + 1) == 'D') {
-                checkForFood(1, gameState);
+                checkForFood(gameState, 1);
                 this->prevMove = 2;
                 return 1;
             } else {
-                checkForFood(4, gameState);
+                checkForFood(gameState, 4);
                 this->prevMove = 4;
                 return this->prevMove;
             }
         }
         if (this->prevMove == 2) {
             if (gameState.vision.at(playerRow).at(playerCol - 1) == '+' || gameState.vision.at(playerRow).at(playerCol - 1) == 'D') {
-                checkForFood(1, gameState);
+                checkForFood(gameState, 1);
                 this->prevMove = 4;
                 return 1;
             } else {
-                checkForFood(2, gameState);
+                checkForFood(gameState, 2);
                 this->prevMove = 2;
                 return this->prevMove;
             }
@@ -127,4 +147,25 @@ int Brain::stageTwoLogic(GameState &gameState) {
     }
     
     return 1;
+}
+
+
+int Brain::stageThreeLogic(GameState &gameState) {
+    if (validMove(gameState, 4) && this->prevDirection != 2) {
+        this->prevDirection = 4;
+        return 4;
+    }
+    if (validMove(gameState, 1) && this->prevDirection != 3) {
+        this->prevDirection = 1;
+        return 1;
+    }
+    if (validMove(gameState, 3) && this->prevDirection != 1) {
+        this->prevDirection = 3;
+        return 3;
+    }
+    if (validMove(gameState, 2) && this->prevDirection != 4) {
+        this->prevDirection = 2;
+        return 2;
+    }
+    return 0;
 }
