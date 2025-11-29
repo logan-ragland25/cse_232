@@ -12,9 +12,12 @@ public:
     int prevPosition [2] = {1,1};
     int aPos [2] = {-1,-1};
     int bPos [2] = {-1,-1};
+    bool aCollected = 0;
+    bool bCollected = 0;
 
     int prevMove {};
     int prevDirection {};
+    int prevDirectionStage3 {};
     int foodRemaining{17};
     Brain();                               // Constructor
     int getNextMove(GameState &gamestate); // Returns the next move for the AI

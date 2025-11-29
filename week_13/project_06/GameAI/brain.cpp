@@ -173,23 +173,158 @@ int Brain::stageTwoLogic(GameState &gameState) {
 }
 
 int Brain::stageThreeLogic(GameState &gameState) {
+    int playerRow = getPlayerRowInVisionArray(gameState);
+    int playerCol = getPlayerColInVisionArray(gameState);
+
     for (unsigned int row = 0; row < gameState.vision.size(); row++) {
         for (unsigned int col = 0; col < gameState.vision.at(row).size(); col++) {
             char character = gameState.vision[row][col];
             if (character == 'A') {
-                aPos[0]=  row;
-                aPos[1]=  col;
+                aPos[0] =  row;
+                aPos[1] =  col;
             }
             if (character == 'B') {
-                bPos[0]=  row;
-                bPos[1]=  col;
+                bPos[0] =  row;
+                bPos[1] =  col;
             }
         }
     }
     if (aPos[0] == -1) {
+        if (gameState.vision.at(playerRow).at(playerCol + 1) == 'B') {
+            prevDirection = 3;
+            return 3;
+        }
         return stageTwoLogic(gameState);
+    } else if (aCollected == 0) {
+        if (gameState.vision.at(playerRow + 1).at(playerCol) == '+') {
+            prevDirectionStage3 = 4;
+            return 4;
+        }
+        
+        if (aPos[0] > gameState.pos[0]) {
+            if (validMove(gameState, 3) && prevDirectionStage3 != 1) {
+                prevDirectionStage3 = 3;
+                if (gameState.vision.at(playerRow + 1).at(playerCol) == 'A') {
+                    aCollected = 1;
+                }
+                return 3;
+            }
+        }
+        
+        if (aPos[0] < gameState.pos[0]) {
+            if (validMove(gameState, 1) && prevDirectionStage3 != 3) {
+                prevDirectionStage3 = 1;
+                if (gameState.vision.at(playerRow - 1).at(playerCol) == 'A') {
+                    aCollected = 1;
+                }
+                return 1;
+            }
+        }
+
+        if (aPos[1] > gameState.pos[1]) {
+            if (validMove(gameState, 4) && prevDirectionStage3 != 2) {
+                prevDirectionStage3 = 4;
+                if (gameState.vision.at(playerRow).at(playerCol + 1) == 'A') {
+                    aCollected = 1;
+                }
+                return 4;
+            } else if (validMove(gameState, 3) && prevDirectionStage3 != 1) {
+                prevDirectionStage3 = 3;
+                if (gameState.vision.at(playerRow + 1).at(playerCol) == 'A') {
+                    aCollected = 1;
+                }
+                return 3;
+            }
+        } 
+        if (aPos[1] < gameState.pos[1]) {
+            if (validMove(gameState, 2) && prevDirectionStage3 != 4) {
+                prevDirectionStage3 = 2;
+                if (gameState.vision.at(playerRow).at(playerCol - 1) == 'A') {
+                    aCollected = 1;
+                }
+                return 2;
+            } else if (validMove(gameState, 3) && prevDirectionStage3 != 1) {
+                prevDirectionStage3 = 3;
+                if (gameState.vision.at(playerRow + 1).at(playerCol) == 'A') {
+                    aCollected = 1;
+                }
+                return 3;
+            }
+        }
+        
+    } else if (bCollected == 0) {
+        if (gameState.vision.at(playerRow + 1).at(playerCol) == '+' && gameState.vision.at(playerRow).at(playerCol + 1) != '+') {
+            prevDirectionStage3 = 4;
+            return 4;
+        }
+        
+        if (bPos[0] > gameState.pos[0]) {
+            if (validMove(gameState, 3) && prevDirectionStage3 != 1) {
+                prevDirectionStage3 = 3;
+                if (gameState.vision.at(playerRow + 1).at(playerCol) == 'A') {
+                    aCollected = 1;
+                }
+                return 3;
+            }
+        }
+        
+        if (bPos[0] < gameState.pos[0]) {
+            if (validMove(gameState, 1) && prevDirectionStage3 != 3) {
+                prevDirectionStage3 = 1;
+                if (gameState.vision.at(playerRow - 1).at(playerCol) == 'B') {
+                    bCollected = 1;
+                }
+                return 1;
+            }
+        }
+
+        if (bPos[1] > gameState.pos[1]) {
+            if (validMove(gameState, 4) && prevDirectionStage3 != 2) {
+                prevDirectionStage3 = 4;
+                if (gameState.vision.at(playerRow).at(playerCol + 1) == 'B') {
+                    bCollected = 1;
+                }
+                return 4;
+            } else if (validMove(gameState, 3) && prevDirectionStage3 != 1) {
+                prevDirectionStage3 = 3;
+                if (gameState.vision.at(playerRow + 1).at(playerCol) == 'B') {
+                    bCollected = 1;
+                }
+                return 3;
+            }
+        } 
+        if (bPos[1] < gameState.pos[1]) {
+            if (validMove(gameState, 2) && prevDirectionStage3 != 4) {
+                prevDirectionStage3 = 2;
+                if (gameState.vision.at(playerRow).at(playerCol - 1) == 'B') {
+                    bCollected = 1;
+                }
+                return 2;
+            } else if (validMove(gameState, 3) && prevDirectionStage3 != 1) {
+                prevDirectionStage3 = 3;
+                if (gameState.vision.at(playerRow + 1).at(playerCol) == 'B') {
+                    bCollected = 1;
+                }
+                return 3;
+            }
+        }
     } else {
-        std::cout << "Attempting to head towards " << aPos[0] << ", " << aPos[1] << "\n";
+        if (validMove(gameState, 4) && this->prevDirection != 2) {
+            this->prevDirection = 4;
+            return 4;
+        }
+        if (validMove(gameState, 3) && this->prevDirection != 1) {
+            this->prevDirection = 3;
+            return 3;
+        }
+        if (validMove(gameState, 2) && this->prevDirection != 4) {
+            this->prevDirection = 2;
+            return 2;
+        }
+        if (validMove(gameState, 1) && this->prevDirection != 3) {
+            this->prevDirection = 1;
+            return 1;
+        }
     }
     return 0;
 }
