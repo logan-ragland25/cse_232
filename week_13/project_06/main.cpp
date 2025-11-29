@@ -11,7 +11,7 @@ using std::string;
 
 int main(int argc, char **argv)
 {
-    string path_to_map = "Maps/L1.map"; // Path to the defaukl map file
+    string path_to_map = "Maps/L3.map"; // Path to the defaukl map file
     int visual = 0;                     // Flag for visual mode (0 = no visual)
     bool human = false;
 

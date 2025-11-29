@@ -49,6 +49,10 @@ int Brain::chooseMove(GameState &gameState) {
         nextMove = stageTwoLogic(gameState);
     } else if (gameState.stage == 3) {
         nextMove = stageThreeLogic(gameState);
+    } else if (gameState.stage == 4) {
+        nextMove = stageFourLogic(gameState);
+    } else if (gameState.stage == 5) {
+        nextMove = stageFiveLogic(gameState);
     }
 
     return nextMove;
@@ -58,16 +62,16 @@ bool Brain::validMove(GameState &gameState, int direction) {
     int playerRow = getPlayerRowInVisionArray(gameState);
     int playerCol = getPlayerColInVisionArray(gameState);
 
-    if (direction == 1 && gameState.vision.at(playerRow - 1).at(playerCol) != '+') {
+    if (direction == 1 && gameState.vision.at(playerRow - 1).at(playerCol) != '+' && gameState.vision.at(playerRow - 1).at(playerCol) != 'T') {
         return 1;
     }
-    if (direction == 2 && gameState.vision.at(playerRow).at(playerCol - 1) != '+') {
+    if (direction == 2 && gameState.vision.at(playerRow).at(playerCol - 1) != '+' && gameState.vision.at(playerRow).at(playerCol - 1) != 'T') {
         return 1;
     }
-    if (direction == 3 && gameState.vision.at(playerRow + 1).at(playerCol) != '+') {
+    if (direction == 3 && gameState.vision.at(playerRow + 1).at(playerCol) != '+' && gameState.vision.at(playerRow + 1).at(playerCol) != 'T') {
         return 1;
     }
-    if (direction == 4 && gameState.vision.at(playerRow).at(playerCol + 1) != '+') {
+    if (direction == 4 && gameState.vision.at(playerRow).at(playerCol + 1) != '+' && gameState.vision.at(playerRow).at(playerCol + 1) != 'T') {
         return 1;
     }
     return 0;
@@ -329,3 +333,57 @@ int Brain::stageThreeLogic(GameState &gameState) {
     return 0;
 }
 
+int Brain::stageFourLogic(GameState &gameState) {
+    int playerRow = getPlayerRowInVisionArray(gameState);
+    int playerCol = getPlayerColInVisionArray(gameState);
+
+    if (gameState.vision.at(playerRow - 1).at(playerCol) == '+' && gameState.vision.at(playerRow + 1).at(playerCol) == '+' && gameState.vision.at(playerRow).at(playerCol + 1) == ' ') {
+        return 4;
+    }
+    if (gameState.vision.at(playerRow + 1).at(playerCol + 1) == 'X') {
+        return 0;
+    } 
+    if (gameState.vision.at(playerRow - 1).at(playerCol) == 'X') {
+        return 4;
+    }
+    if (gameState.vision.at(playerRow - 1).at(playerCol) == '+' && gameState.vision.at(playerRow).at(playerCol + 1) != 'X' && gameState.vision.at(playerRow).at(playerCol + 1) != '+') {
+        return 4;
+    }
+    if (gameState.vision.at(playerRow).at(playerCol + 1) == '+') {
+        prevDirectionStage4 = 3;
+        return 3;
+    }
+    if (prevDirectionStage4 != 3) {
+        return 1;
+    }
+    if (gameState.vision.at(playerRow - 1).at(playerCol + 1) == '+') {
+        return 4;
+    }
+    if (gameState.vision.at(playerRow - 1).at(playerCol + 1) == '+' && gameState.vision.at(playerRow).at(playerCol + 1) == ' ') {
+        return 4;
+    }
+    if (gameState.vision.at(playerRow + 1).at(playerCol + 1) == 'X') {
+        return 0;
+    }
+    return 0;   
+}
+
+int Brain::stageFiveLogic(GameState &gameState) {
+    if (validMove(gameState, 4) && this->prevDirection != 2) {
+        this->prevDirection = 4;
+        return 4;
+    }
+    if (validMove(gameState, 1) && this->prevDirection != 3) {
+        this->prevDirection = 1;
+        return 1;
+    }
+    if (validMove(gameState, 3) && this->prevDirection != 1) {
+        this->prevDirection = 3;
+        return 3;
+    }
+    if (validMove(gameState, 2) && this->prevDirection != 4) {
+        this->prevDirection = 2;
+        return 2;
+    }
+    return 0;
+}

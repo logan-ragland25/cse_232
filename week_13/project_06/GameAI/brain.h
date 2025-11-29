@@ -18,6 +18,8 @@ public:
     int prevMove {};
     int prevDirection {};
     int prevDirectionStage3 {};
+    int prevDirectionStage4 {};
+
     int foodRemaining{17};
     Brain();                               // Constructor
     int getNextMove(GameState &gamestate); // Returns the next move for the AI
@@ -34,8 +36,11 @@ public:
     
     int stageTwoLogic(GameState &gameState);
 
-    
     int stageThreeLogic(GameState &gameState);
+
+    int stageFourLogic(GameState &gameState);
+
+    int stageFiveLogic(GameState &gameState);
 };
 
 #endif // BRAIN_H
